@@ -1,0 +1,24 @@
+{
+  "name": "recipe-vault",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Recipe Vault - a recipe app with Firebase Authentication, bundled with Webpack. Final project, FFU1200.",
+  "scripts": {
+    "start": "webpack serve --mode development",
+    "build": "webpack --mode production",
+    "preview": "npx serve dist"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "firebase": "^12.17.0"
+  },
+  "devDependencies": {
+    "css-loader": "^7.1.4",
+    "dotenv": "^17.4.2",
+    "html-webpack-plugin": "^5.6.8",
+    "mini-css-extract-plugin": "^2.10.2",
+    "webpack": "^5.109.2",
+    "webpack-cli": "^7.2.2",
+    "webpack-dev-server": "^6.0.0"
+  }
+}

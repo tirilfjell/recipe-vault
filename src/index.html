@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Recipe Vault - search thousands of recipes and keep your favourites in your own account."
+    />
+    <title>Recipe Vault</title>
+  </head>
+
+  <body class="page">
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="site-header">
+      <div class="site-header__inner">
+        <p class="site-header__brand">
+          <span class="site-header__mark" aria-hidden="true">RV</span>
+          Recipe Vault
+        </p>
+
+        <div class="account-bar" data-account-bar hidden>
+          <span class="account-bar__email" data-account-email></span>
+          <button class="button button--ghost button--small" type="button" data-sign-out>
+            Sign out
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page__main" id="main-content">
+      <!-- Confirmations and errors are announced politely to screen readers. -->
+      <div class="feedback" role="status" aria-live="polite" data-feedback hidden></div>
+
+      <!-- Shown while nobody is signed in -->
+      <section class="auth-view" data-auth-view aria-labelledby="auth-title">
+        <div class="auth-view__intro">
+          <h1 id="auth-title">Your recipes, in one place</h1>
+          <p class="auth-view__lead">
+            Search thousands of recipes, open the full method and ingredient list, and keep the
+            ones you like in your own account. Sign in to get started.
+          </p>
+        </div>
+
+        <div class="auth-card">
+          <!-- Shown when the project has no Firebase configuration yet -->
+          <div class="status-message status-message--error" data-setup-notice hidden>
+            <h2 class="status-message__title">Firebase is not configured yet</h2>
+            <p>
+              Copy <code>.env.example</code> to <code>.env</code> and fill in the values from your
+              own Firebase project, then start the app again. The steps are described in
+              <code>readme.md</code>.
+            </p>
+          </div>
+
+          <!-- novalidate: the validation and the messages are handled in
+               authPanel.js, so every field reports problems the same way. -->
+          <form class="auth-form" data-auth-form novalidate>
+            <div class="mode-switch" role="group" aria-label="Choose sign in or create account">
+              <button
+                class="mode-switch__button mode-switch__button--active"
+                type="button"
+                data-auth-mode="sign-in"
+                aria-pressed="true"
+              >
+                Sign in
+              </button>
+              <button
+                class="mode-switch__button"
+                type="button"
+                data-auth-mode="register"
+                aria-pressed="false"
+              >
+                Create account
+              </button>
+            </div>
+
+            <p class="auth-form__hint" data-auth-hint></p>
+
+            <div class="auth-form__field">
+              <label class="auth-form__label" for="email">Email address</label>
+              <input
+                class="auth-form__input"
+                type="email"
+                id="email"
+                name="email"
+                autocomplete="email"
+                aria-describedby="email-error"
+                required
+              />
+              <span class="auth-form__error" id="email-error" data-error-for="email"></span>
+            </div>
+
+            <div class="auth-form__field">
+              <label class="auth-form__label" for="password">Password</label>
+              <input
+                class="auth-form__input"
+                type="password"
+                id="password"
+                name="password"
+                autocomplete="current-password"
+                aria-describedby="password-error"
+                required
+              />
+              <span class="auth-form__error" id="password-error" data-error-for="password"></span>
+            </div>
+
+            <button class="button button--primary button--full" type="submit" data-auth-submit>
+              Sign in
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Shown once a user is signed in -->
+      <div class="app-view" data-app-view hidden>
+        <section class="panel" aria-labelledby="browse-title">
+          <div class="panel__header">
+            <h1 class="panel__title" id="browse-title">Browse recipes</h1>
+            <p class="panel__count" data-result-summary></p>
+          </div>
+
+          <form class="search-form" data-search-form role="search">
+            <div class="search-form__field">
+              <label class="search-form__label" for="searchTerm">Search by name</label>
+              <div class="search-form__row">
+                <input
+                  class="search-form__input"
+                  type="search"
+                  id="searchTerm"
+                  name="searchTerm"
+                  placeholder="For example: pasta"
+                  autocomplete="off"
+                />
+                <button class="button button--primary" type="submit" name="searchButton">
+                  Search
+                </button>
+              </div>
+            </div>
+
+            <div class="search-form__filters">
+              <div class="search-form__field">
+                <label class="search-form__label" for="categoryFilter">Category</label>
+                <select class="search-form__select" id="categoryFilter" data-category-filter>
+                  <option value="">All categories</option>
+                </select>
+              </div>
+
+              <div class="search-form__field">
+                <label class="search-form__label" for="sortOrder">Sort by</label>
+                <select class="search-form__select" id="sortOrder" data-sort-order></select>
+              </div>
+            </div>
+          </form>
+
+          <div
+            class="status-message"
+            role="status"
+            aria-live="polite"
+            data-recipe-status
+            hidden
+          ></div>
+
+          <ul class="recipe-grid" data-recipe-list></ul>
+        </section>
+
+        <section class="panel" aria-labelledby="saved-title">
+          <div class="panel__header">
+            <h2 class="panel__title" id="saved-title">Saved recipes</h2>
+            <p class="panel__count">
+              <span data-favourites-count>0</span> saved
+            </p>
+          </div>
+
+          <div
+            class="status-message"
+            role="status"
+            aria-live="polite"
+            data-favourites-status
+            hidden
+          ></div>
+
+          <ul class="favourites" data-favourites-list></ul>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <p>
+          Recipe data from
+          <a href="https://www.themealdb.com/api.php">TheMealDB</a>. Accounts and saved recipes are
+          handled by Firebase.
+        </p>
+        <p>Final project &ndash; FFU1200 Production of Frontend Development.</p>
+      </div>
+    </footer>
+
+    <!-- A native dialog traps focus and closes on Escape without extra code. -->
+    <dialog class="recipe-dialog" data-recipe-dialog aria-labelledby="dialog-title">
+      <div class="recipe-dialog__header">
+        <h2 class="recipe-dialog__title" id="dialog-title" data-dialog-title></h2>
+        <button
+          class="button button--ghost button--small"
+          type="button"
+          data-dialog-close
+          aria-label="Close the recipe"
+        >
+          Close
+        </button>
+      </div>
+      <div class="recipe-dialog__body" data-dialog-body></div>
+    </dialog>
+  </body>
+</html>

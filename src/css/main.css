@@ -1,0 +1,9 @@
+/* Single entry point for the stylesheet.
+   The partials are imported from the most generic to the most specific layer,
+   so component rules can safely override the base defaults. Webpack resolves
+   these imports at build time and emits one stylesheet. */
+
+@import "./base.css";
+@import "./layout.css";
+@import "./components.css";
+@import "./auth.css";

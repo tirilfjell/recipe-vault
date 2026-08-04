@@ -1,0 +1,385 @@
+/* Component layer: buttons, cards, badges, search form, dialog and messages. */
+
+/* Button ----------------------------------------------------------------- */
+
+.button {
+  padding: var(--space-sm) var(--space-lg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.button--primary {
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+}
+
+.button--primary:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+}
+
+.button--secondary {
+  background-color: var(--color-surface);
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.button--secondary:hover:not(:disabled) {
+  background-color: var(--color-surface-muted);
+}
+
+.button--ghost {
+  background-color: var(--color-surface-muted);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.button--ghost:hover:not(:disabled) {
+  background-color: var(--color-border);
+}
+
+/* A saved recipe keeps its own colour, and the button text says "Saved" as
+   well, so the state does not rely on colour alone. */
+.button--ghost-active {
+  background-color: var(--color-accent-surface);
+  color: var(--color-accent-text);
+  border-color: var(--color-accent-text);
+}
+
+.button--danger {
+  background-color: var(--color-surface);
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}
+
+.button--danger:hover:not(:disabled) {
+  background-color: var(--color-danger);
+  color: var(--color-primary-contrast);
+}
+
+.button--small {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-small);
+}
+
+.button--full {
+  width: 100%;
+}
+
+/* Badge ------------------------------------------------------------------ */
+
+.badge {
+  display: inline-block;
+  padding: 0.125rem var(--space-sm);
+  background-color: var(--color-accent-surface);
+  color: var(--color-accent-text);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+/* Search form ------------------------------------------------------------ */
+
+.search-form {
+  display: grid;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+  background-color: var(--color-surface-muted);
+  border-radius: var(--radius-lg);
+}
+
+.search-form__label {
+  display: block;
+  margin-bottom: var(--space-xs);
+  font-weight: 600;
+  font-size: var(--font-size-small);
+}
+
+.search-form__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.search-form__input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding: var(--space-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font: inherit;
+}
+
+.search-form__filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: var(--space-md);
+}
+
+.search-form__select {
+  width: 100%;
+  padding: var(--space-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font: inherit;
+}
+
+/* Recipe card ------------------------------------------------------------ */
+
+.recipe-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.recipe-card__image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.recipe-card__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: var(--space-md);
+}
+
+.recipe-card__title {
+  margin-bottom: var(--space-sm);
+  font-size: 1.0625rem;
+}
+
+.recipe-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.recipe-card__area {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+}
+
+.recipe-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: auto;
+}
+
+/* Saved recipe entry ----------------------------------------------------- */
+
+.favourite {
+  display: grid;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background-color: var(--color-surface-muted);
+  border-radius: var(--radius-lg);
+}
+
+.favourite__title {
+  margin-bottom: var(--space-xs);
+  font-size: 1rem;
+}
+
+.favourite__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: 0;
+}
+
+.favourite__note-form {
+  display: grid;
+  gap: var(--space-xs);
+}
+
+.favourite__note-label {
+  font-size: var(--font-size-small);
+  font-weight: 600;
+}
+
+.favourite__note-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.favourite__note-input {
+  flex: 1 1 8rem;
+  min-width: 0;
+  padding: var(--space-xs) var(--space-sm);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font: inherit;
+  font-size: var(--font-size-small);
+}
+
+.favourite__note-input[aria-invalid] {
+  border-color: var(--color-danger);
+  border-width: 2px;
+}
+
+.favourite__note-error {
+  color: var(--color-danger);
+  font-size: var(--font-size-small);
+  font-weight: 600;
+}
+
+.favourite__note-error:empty {
+  display: none;
+}
+
+/* Grid items stretch by default, which would make the button as wide as the
+   whole entry. */
+.favourite__remove {
+  justify-self: start;
+}
+
+/* Recipe dialog ---------------------------------------------------------- */
+
+.recipe-dialog {
+  width: min(40rem, 100% - 2rem);
+  max-height: 85vh;
+  padding: 0;
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.recipe-dialog::backdrop {
+  background-color: rgba(36, 32, 28, 0.6);
+}
+
+.recipe-dialog__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  position: sticky;
+  top: 0;
+  padding: var(--space-lg);
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.recipe-dialog__title {
+  margin: 0;
+  font-size: var(--font-size-title);
+}
+
+.recipe-dialog__body {
+  padding: var(--space-lg);
+  overflow-y: auto;
+}
+
+.recipe-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.recipe-detail__image {
+  width: 100%;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-md);
+}
+
+.recipe-detail__heading {
+  margin-top: var(--space-lg);
+  font-size: 1.0625rem;
+}
+
+.ingredient-list {
+  margin: 0 0 var(--space-md);
+  padding: 0;
+  list-style: none;
+}
+
+.ingredient-list__item {
+  display: grid;
+  grid-template-columns: minmax(5rem, 8rem) 1fr;
+  gap: var(--space-sm);
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.ingredient-list__measure {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+}
+
+/* Status and feedback messages ------------------------------------------- */
+
+.status-message {
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+  background-color: var(--color-surface-muted);
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+}
+
+.status-message--error {
+  background-color: var(--color-danger-surface);
+  color: var(--color-danger);
+  font-weight: 600;
+}
+
+.status-message__title {
+  margin-bottom: var(--space-sm);
+  font-size: 1.0625rem;
+}
+
+.status-message[hidden] {
+  display: none;
+}
+
+.feedback {
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+}
+
+.feedback--success {
+  background-color: var(--color-success-surface);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.feedback--error {
+  background-color: var(--color-danger-surface);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+.feedback[hidden] {
+  display: none;
+}
