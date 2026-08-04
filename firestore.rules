@@ -1,0 +1,27 @@
+rules_version = '2';
+
+// Security rules for Cloud Firestore.
+//
+// These rules are what actually enforce "only authenticated users can read and
+// write". Hiding the interface behind a login screen is not enough on its own,
+// because a request can always be sent straight to the database.
+//
+// Deploy them from the Firebase console (Firestore Database -> Rules) or with
+// the Firebase CLI: firebase deploy --only firestore:rules
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // A saved recipe belongs to exactly one user, and only that user may read
+    // or write it. request.auth is null for anonymous requests, so they are
+    // rejected by the same condition.
+    match /users/{userId}/favourites/{recipeId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Everything else is closed. A new collection has to be granted access
+    // deliberately rather than inheriting it.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
