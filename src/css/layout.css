@@ -1,0 +1,159 @@
+/* Layout layer: page shell, header, footer, panels and the grids. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.page__main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--space-md);
+}
+
+/* Site header ------------------------------------------------------------ */
+
+.site-header {
+  background-color: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.site-header__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  padding: var(--space-md);
+}
+
+.site-header__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: 0;
+  font-size: var(--font-size-title);
+  font-weight: 700;
+}
+
+.site-header__mark {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-small);
+  letter-spacing: 0.05em;
+}
+
+.account-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm) var(--space-md);
+}
+
+.account-bar[hidden] {
+  display: none;
+}
+
+.account-bar__email {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+}
+
+/* App view --------------------------------------------------------------- */
+
+/* One column on small screens, saved recipes beside the browser from 68rem. */
+.app-view {
+  display: grid;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.app-view[hidden] {
+  display: none;
+}
+
+@media (min-width: 68rem) {
+  .app-view {
+    grid-template-columns: 1fr 22rem;
+  }
+}
+
+.panel {
+  /* Grid items are as wide as their content by default, which would let the
+     recipe grid stretch the column past the viewport. */
+  min-width: 0;
+  padding: var(--space-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-panel);
+}
+
+.panel__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm) var(--space-md);
+}
+
+.panel__title {
+  margin-bottom: var(--space-md);
+  font-size: 1.5rem;
+}
+
+.panel__count {
+  margin-bottom: var(--space-md);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+}
+
+/* Recipe grid ------------------------------------------------------------ */
+
+.recipe-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--space-lg);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Saved recipes list ----------------------------------------------------- */
+
+.favourites {
+  display: grid;
+  gap: var(--space-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Site footer ------------------------------------------------------------ */
+
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+}
+
+.site-footer__inner {
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  padding: var(--space-lg) var(--space-md);
+}
+
+.site-footer__inner p:last-child {
+  margin-bottom: 0;
+}
