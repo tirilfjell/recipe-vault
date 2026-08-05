@@ -11,21 +11,39 @@ import "./css/main.css";
 
 import { ApiError } from "./js/api/ApiError.js";
 import { fetchCategories, fetchRecipeById, searchRecipes } from "./js/api/mealApi.js";
-import { observeUser, register, signIn, signOutUser } from "./js/auth/authService.js";
+import {
+  deleteAccount,
+  observeUser,
+  register,
+  signIn,
+  signOutUser,
+} from "./js/auth/authService.js";
 import { isFirebaseConfigured } from "./js/auth/firebase.js";
 import {
   observeFavourites,
+  removeAllFavourites,
   removeFavourite,
   saveFavourite,
   updateFavouriteNote,
 } from "./js/features/favouritesRepository.js";
+import { applyInitialTheme } from "./js/features/themeService.js";
+import { applyTranslations } from "./js/i18n/applyTranslations.js";
+import { applyInitialLanguage, onLanguageChange, t } from "./js/i18n/i18n.js";
 import { DEFAULT_SORT, applyFilters, collectCategories } from "./js/features/recipeFilters.js";
 import { createAuthPanel } from "./js/ui/authPanel.js";
+import { createDinnerWheel } from "./js/ui/dinnerWheel.js";
 import { createFavouritesList } from "./js/ui/favouritesList.js";
 import { createFeedback } from "./js/ui/feedback.js";
 import { createRecipeDialog } from "./js/ui/recipeDialog.js";
 import { createRecipeList } from "./js/ui/recipeList.js";
+import {
+  SCREEN_BROWSE,
+  SCREEN_SAVED,
+  SCREEN_SETTINGS,
+  createScreenNav,
+} from "./js/ui/screenNav.js";
 import { createSearchControls } from "./js/ui/searchControls.js";
+import { createSettingsPanel } from "./js/ui/settingsPanel.js";
 import { requireElement } from "./js/utils/dom.js";
 
 /** Everything the interface needs to know, in one object. */
@@ -63,7 +81,22 @@ function main() {
     favouritesCount: requireElement("[data-favourites-count]"),
     dialog: requireElement("[data-recipe-dialog]"),
     dialogClose: requireElement("[data-dialog-close]"),
+    dinnerWheel: requireElement("[data-dinner-wheel]"),
+    wheelStatus: requireElement("[data-wheel-status]"),
+    spinButton: requireElement("[data-spin-wheel]"),
+    screenNav: requireElement("[data-screen-nav]"),
+    screenNavWrapper: requireElement("[data-screen-nav-wrapper]"),
+    settingsPanel: requireElement("[data-settings-panel]"),
+    screenBrowse: requireElement('[data-screen="browse"]'),
+    screenSaved: requireElement('[data-screen="saved"]'),
+    screenSettings: requireElement('[data-screen="settings"]'),
   };
+
+  // The language and theme are applied before anything is drawn, so the first
+  // paint is already correct rather than flashing English or the wrong theme.
+  applyInitialLanguage();
+  applyInitialTheme();
+  applyTranslations();
 
   const feedback = createFeedback(elements.feedback);
 
@@ -95,6 +128,15 @@ function main() {
     closeButton: elements.dialogClose,
   });
 
+  const dinnerWheel = createDinnerWheel({
+    container: elements.dinnerWheel,
+    statusElement: elements.wheelStatus,
+    spinButton: elements.spinButton,
+    // The wheel only decides which recipe won; opening it is the same path the
+    // recipe cards use.
+    onPick: (recipeId) => openRecipe(recipeId),
+  });
+
   const searchControls = createSearchControls({
     form: elements.searchForm,
     categorySelect: elements.categorySelect,
@@ -116,7 +158,7 @@ function main() {
         // from there, so nothing else has to happen here.
         if (mode === "register") {
           await register(email, password);
-          feedback.showSuccess("Your account was created. Welcome!");
+          feedback.showSuccess(t("auth.accountCreated"));
         } else {
           await signIn(email, password);
         }
@@ -132,7 +174,7 @@ function main() {
    * @returns {string}
    */
   function describeCount(count) {
-    return `${count} ${count === 1 ? "recipe" : "recipes"}`;
+    return count === 1 ? t("browse.countOne") : t("browse.countMany", { count });
   }
 
   /** Draws the recipes with the current filter and sort order. */
@@ -141,10 +183,17 @@ function main() {
 
     recipeList.render(visibleRecipes, state.savedIds);
 
+    // The wheel offers whatever the user is currently looking at, so filtering
+    // by category narrows the wheel as well.
+    dinnerWheel.setRecipes(visibleRecipes);
+
     elements.resultSummary.textContent =
       visibleRecipes.length === state.recipes.length
         ? describeCount(visibleRecipes.length)
-        : `${visibleRecipes.length} of ${describeCount(state.recipes.length)}`;
+        : t("browse.countFiltered", {
+            shown: visibleRecipes.length,
+            total: describeCount(state.recipes.length),
+          });
   }
 
   /**
@@ -164,7 +213,7 @@ function main() {
       recipeList.showError(
         error instanceof ApiError
           ? error.message
-          : "The recipes could not be loaded. Please try again.",
+          : t("apiError.loadFailed"),
       );
     } finally {
       searchControls.setBusy(false);
@@ -194,7 +243,7 @@ function main() {
       const recipe = await fetchRecipeById(recipeId);
 
       if (!recipe) {
-        recipeDialog.showError("That recipe could not be found.");
+        recipeDialog.showError(t("recipe.notFound"));
         return;
       }
 
@@ -202,7 +251,7 @@ function main() {
     } catch (error) {
       console.error("The recipe could not be opened:", error);
       recipeDialog.showError(
-        error instanceof ApiError ? error.message : "The recipe could not be opened.",
+        error instanceof ApiError ? error.message : t("recipe.openFailed"),
       );
     }
   }
@@ -214,7 +263,7 @@ function main() {
    */
   async function toggleFavourite(recipeId, isSaved) {
     if (!state.user) {
-      feedback.showError("Please sign in to save recipes.");
+      feedback.showError(t("saved.signInFirst"));
       return;
     }
 
@@ -227,10 +276,10 @@ function main() {
     try {
       if (isSaved) {
         await removeFavourite(state.user.uid, recipeId);
-        feedback.showSuccess(`${recipe.name} was removed from your saved recipes.`);
+        feedback.showSuccess(t("saved.removedRecipe", { name: recipe.name }));
       } else {
         await saveFavourite(state.user.uid, recipe);
-        feedback.showSuccess(`${recipe.name} was saved.`);
+        feedback.showSuccess(t("saved.savedRecipe", { name: recipe.name }));
       }
       // The card is redrawn by the Firestore listener, which is the single
       // source of truth for what is saved.
@@ -251,7 +300,7 @@ function main() {
 
     try {
       await updateFavouriteNote(state.user.uid, recipeId, note);
-      feedback.showSuccess("Your note was saved.");
+      feedback.showSuccess(t("saved.noteSaved"));
     } catch (error) {
       feedback.showError(error.message);
     }
@@ -302,10 +351,58 @@ function main() {
     favouritesList.clear();
   }
 
+  const screenNav = createScreenNav({
+    navElement: elements.screenNav,
+    screens: {
+      [SCREEN_BROWSE]: elements.screenBrowse,
+      [SCREEN_SAVED]: elements.screenSaved,
+      [SCREEN_SETTINGS]: elements.screenSettings,
+    },
+  });
+
+  const settingsPanel = createSettingsPanel({
+    container: elements.settingsPanel,
+    onDeleteAccount: async () => {
+      if (!state.user) {
+        return;
+      }
+
+      const { uid } = state.user;
+
+      try {
+        // The saved recipes go first: once the account is gone the Firestore
+        // rules would refuse the delete and the documents would be orphaned.
+        await removeAllFavourites(uid);
+        stopFavouritesListener();
+        await deleteAccount();
+
+        // The auth listener below notices the account is gone and returns to the
+        // sign-in screen, so only the confirmation is needed here.
+        feedback.showSuccess(t("settings.deleteDone"));
+      } catch (error) {
+        feedback.showError(error.message);
+      }
+    },
+  });
+
+  settingsPanel.render();
+
+  // Everything that holds translated text is redrawn when the language changes.
+  // The static markup is handled by applyTranslations; the rest is rebuilt by
+  // the modules that own it.
+  onLanguageChange(() => {
+    applyTranslations();
+    screenNav.render();
+    settingsPanel.render();
+    searchControls.refreshLabels();
+    authPanel.refreshLabels();
+    renderRecipes();
+  });
+
   elements.signOutButton.addEventListener("click", async () => {
     try {
       await signOutUser();
-      feedback.showSuccess("You have been signed out.");
+      feedback.showSuccess(t("auth.signedOut"));
     } catch (error) {
       feedback.showError(error.message);
     }
@@ -320,7 +417,13 @@ function main() {
       elements.authView.hidden = true;
       elements.appView.hidden = false;
       elements.accountBar.hidden = false;
-      elements.accountEmail.textContent = user.email ?? "Signed in";
+      elements.screenNavWrapper.hidden = false;
+      elements.accountEmail.textContent = user.email ?? "";
+
+      // Whichever screen the URL asks for, now that there is an account to show
+      // it for.
+      screenNav.show(screenNav.getCurrent());
+      settingsPanel.render();
 
       startFavouritesListener(user.uid);
       loadRecipes().then(loadCategories);
@@ -332,6 +435,7 @@ function main() {
 
     elements.appView.hidden = true;
     elements.accountBar.hidden = true;
+    elements.screenNavWrapper.hidden = true;
     elements.authView.hidden = false;
     authPanel.reset();
   });
@@ -346,7 +450,7 @@ try {
   document.body.prepend(
     Object.assign(document.createElement("p"), {
       className: "feedback feedback--error",
-      textContent: "The application could not be started. Please reload the page.",
+      textContent: t("app.startFailed"),
     }),
   );
 }
