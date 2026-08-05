@@ -11,10 +11,17 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // A saved recipe belongs to exactly one user, and only that user may read
-    // or write it. request.auth is null for anonymous requests, so they are
-    // rejected by the same condition.
-    match /users/{userId}/favourites/{recipeId} {
+    // Everything belonging to one user, including the favourites collection and
+    // every saved recipe in it. Only that user may read or write it, and
+    // request.auth is null for anonymous requests, so they are rejected by the
+    // same condition.
+    //
+    // The recursive wildcard matches the collection path as well as the
+    // documents under it. That matters because the app reads the saved recipes
+    // with a collection query (see observeFavourites): Firestore checks a list
+    // query against the collection path, which a rule written only for
+    // /favourites/{recipeId} would not cover.
+    match /users/{userId}/{document=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
 
