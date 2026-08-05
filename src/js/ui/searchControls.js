@@ -7,6 +7,7 @@
  */
 
 import { DEFAULT_SORT, SORT_OPTIONS } from "../features/recipeFilters.js";
+import { t } from "../i18n/i18n.js";
 import { createElement } from "../utils/dom.js";
 
 /**
@@ -25,13 +26,26 @@ export function createSearchControls({
   onSearch,
   onFilterChange,
 }) {
-  // The sort orders are rendered from the same list the sorting itself uses, so
-  // the two can never drift apart.
-  SORT_OPTIONS.forEach((option) => {
-    sortSelect.append(createElement("option", { text: option.label, attributes: { value: option.value } }));
-  });
+  /**
+   * Fills the sort order select.
+   *
+   * The orders are rendered from the same list the sorting itself uses, so the
+   * two can never drift apart. The current choice is kept when the list is
+   * rebuilt after a language change.
+   */
+  function renderSortOptions() {
+    const previousValue = sortSelect.value || DEFAULT_SORT;
 
-  sortSelect.value = DEFAULT_SORT;
+    sortSelect.replaceChildren(
+      ...SORT_OPTIONS.map((option) =>
+        createElement("option", { text: t(option.labelKey), attributes: { value: option.value } }),
+      ),
+    );
+
+    sortSelect.value = previousValue;
+  }
+
+  renderSortOptions();
 
   /** @returns {{category: string, sort: string}} */
   function readFilters() {
@@ -56,7 +70,7 @@ export function createSearchControls({
       const previousValue = categorySelect.value;
 
       categorySelect.replaceChildren(
-        createElement("option", { text: "All categories", attributes: { value: "" } }),
+        createElement("option", { text: t("browse.allCategories"), attributes: { value: "" } }),
         ...categories.map((category) =>
           createElement("option", { text: category, attributes: { value: category } }),
         ),
@@ -70,6 +84,21 @@ export function createSearchControls({
 
     /** @returns {{category: string, sort: string}} */
     getFilters: readFilters,
+
+    /**
+     * Rebuilds the option labels after a language change. The "All categories"
+     * entry is the only category label the app owns; the rest come from the API
+     * and are left as they are.
+     */
+    refreshLabels() {
+      renderSortOptions();
+
+      const allCategoriesOption = categorySelect.querySelector('option[value=""]');
+
+      if (allCategoriesOption) {
+        allCategoriesOption.textContent = t("browse.allCategories");
+      }
+    },
 
     /**
      * Disables the controls while a request is running.

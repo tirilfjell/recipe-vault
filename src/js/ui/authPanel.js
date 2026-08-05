@@ -6,6 +6,7 @@
  * which keeps the user on one screen instead of moving between two.
  */
 
+import { t } from "../i18n/i18n.js";
 import { validateCredentials } from "../utils/validators.js";
 
 /**
@@ -60,11 +61,11 @@ export function createAuthPanel({ form, onSubmit }) {
       button.setAttribute("aria-pressed", String(isActive));
     });
 
-    submitButton.textContent = nextMode === "register" ? "Create account" : "Sign in";
+    submitButton.textContent = nextMode === "register" ? t("auth.createAccount") : t("auth.signIn");
     hint.textContent =
       nextMode === "register"
-        ? "Choose a password of at least 6 characters. Your saved recipes are private to your account."
-        : "Sign in to browse recipes and to see the ones you have saved.";
+        ? t("auth.hintRegister")
+        : t("auth.hintSignIn");
   }
 
   /**
@@ -128,6 +129,14 @@ export function createAuthPanel({ form, onSubmit }) {
       form.reset();
       clearErrors();
       setMode("sign-in");
+    },
+
+    /**
+     * Rewrites the submit button and the hint after a language change, keeping
+     * whichever mode the user had chosen.
+     */
+    refreshLabels() {
+      setMode(mode);
     },
   };
 }

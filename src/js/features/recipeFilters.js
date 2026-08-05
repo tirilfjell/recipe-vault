@@ -8,10 +8,10 @@
 
 /** The sort orders offered in the interface. */
 export const SORT_OPTIONS = [
-  { value: "name-asc", label: "Name (A–Z)" },
-  { value: "name-desc", label: "Name (Z–A)" },
-  { value: "category-asc", label: "Category (A–Z)" },
-  { value: "area-asc", label: "Cuisine (A–Z)" },
+  { value: "name-asc", labelKey: "browse.sortNameAsc" },
+  { value: "name-desc", labelKey: "browse.sortNameDesc" },
+  { value: "category-asc", labelKey: "browse.sortCategory" },
+  { value: "area-asc", labelKey: "browse.sortArea" },
 ];
 
 /** Sort order used before the user picks one. */

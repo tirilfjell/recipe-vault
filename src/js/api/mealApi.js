@@ -9,6 +9,7 @@
  * Documentation: https://www.themealdb.com/api.php
  */
 
+import { t } from "../i18n/i18n.js";
 import { ApiError } from "./ApiError.js";
 
 /** The documented free endpoint. "1" is the public test key. */
@@ -48,11 +49,11 @@ async function request(endpoint) {
     }
 
     if (error?.name === "TimeoutError") {
-      throw new ApiError("The recipe service took too long to answer. Please try again.", error);
+      throw new ApiError(t("apiError.timeout"), error);
     }
 
     throw new ApiError(
-      "The recipes could not be loaded. Please check your internet connection and try again.",
+      t("apiError.loadFailedOffline"),
       error,
     );
   }
@@ -72,7 +73,7 @@ function readIngredients(raw) {
 
     // The API pads the unused slots with empty strings and sometimes null.
     if (name) {
-      ingredients.push({ name, measure: measure || "To taste" });
+      ingredients.push({ name, measure: measure || t("recipe.toTaste") });
     }
   }
 
@@ -88,8 +89,8 @@ function normaliseRecipe(raw) {
   return {
     id: raw.idMeal,
     name: raw.strMeal,
-    category: raw.strCategory ?? "Uncategorised",
-    area: raw.strArea ?? "Unknown",
+    category: raw.strCategory ?? t("recipe.uncategorised"),
+    area: raw.strArea ?? t("recipe.unknown"),
     thumbnail: raw.strMealThumb ?? "",
     instructions: raw.strInstructions?.trim() ?? "",
     youtubeUrl: raw.strYoutube || "",
