@@ -7,6 +7,7 @@
  */
 
 import { MAX_NOTE_LENGTH, validateNote } from "../utils/validators.js";
+import { t } from "../i18n/i18n.js";
 import { createElement } from "../utils/dom.js";
 
 /**
@@ -42,7 +43,7 @@ export function createFavouritesList({
         name: "note",
         value: favourite.note ?? "",
         maxlength: String(MAX_NOTE_LENGTH),
-        placeholder: "For example: halve the chilli",
+        placeholder: t("saved.notePlaceholder"),
         "aria-describedby": noteErrorId,
       },
     });
@@ -67,7 +68,7 @@ export function createFavouritesList({
             noteInput,
             createElement("button", {
               className: "button button--secondary button--small",
-              text: "Save note",
+              text: t("saved.saveNote"),
               attributes: { type: "submit" },
             }),
           ],
@@ -97,7 +98,7 @@ export function createFavouritesList({
 
     const removeButton = createElement("button", {
       className: "button button--danger button--small favourite__remove",
-      text: "Remove",
+      text: t("saved.remove"),
       attributes: {
         type: "button",
         "aria-label": `Remove ${favourite.name} from your saved recipes`,
@@ -116,7 +117,7 @@ export function createFavouritesList({
             createElement("p", {
               className: "favourite__meta",
               children: [
-                createElement("span", { className: "badge", text: favourite.category ?? "Recipe" }),
+                createElement("span", { className: "badge", text: favourite.category ?? t("recipe.uncategorised") }),
                 createElement("span", {
                   className: "recipe-card__area",
                   text: favourite.area ?? "",
@@ -137,11 +138,11 @@ export function createFavouritesList({
      * @param {object[]} favourites
      */
     render(favourites) {
-      countElement.textContent = String(favourites.length);
+      countElement.textContent = t("saved.count", { count: favourites.length });
 
       if (favourites.length === 0) {
         statusElement.textContent =
-          "You have not saved any recipes yet. Use the Save button on a recipe to keep it here.";
+          t("saved.empty");
         statusElement.hidden = false;
         listElement.replaceChildren();
         return;
@@ -167,7 +168,7 @@ export function createFavouritesList({
 
     /** Empties the list, used when the user signs out. */
     clear() {
-      countElement.textContent = "0";
+      countElement.textContent = t("saved.count", { count: 0 });
       statusElement.hidden = true;
       listElement.replaceChildren();
     },

@@ -14,6 +14,7 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
@@ -22,6 +23,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
+import { t } from "../i18n/i18n.js";
 import { getFirebaseDatabase } from "../auth/firebase.js";
 
 /**
@@ -75,7 +77,7 @@ export function observeFavourites(userId, onChange, onError) {
       console.error("The saved recipes could not be read:", error);
       onError(
         new FavouritesError(
-          "Your saved recipes could not be loaded. Please reload the page and try again.",
+          t("saved.loadFailed"),
           error,
         ),
       );
@@ -108,7 +110,7 @@ export async function saveFavourite(userId, recipe) {
     });
   } catch (error) {
     console.error("The recipe could not be saved:", error);
-    throw new FavouritesError("The recipe could not be saved. Please try again.", error);
+    throw new FavouritesError(t("saved.saveFailed"), error);
   }
 }
 
@@ -125,7 +127,7 @@ export async function updateFavouriteNote(userId, recipeId, note) {
     await updateDoc(doc(favouritesCollection(userId), recipeId), { note });
   } catch (error) {
     console.error("The note could not be saved:", error);
-    throw new FavouritesError("The note could not be saved. Please try again.", error);
+    throw new FavouritesError(t("saved.noteFailed"), error);
   }
 }
 
@@ -141,6 +143,30 @@ export async function removeFavourite(userId, recipeId) {
     await deleteDoc(doc(favouritesCollection(userId), recipeId));
   } catch (error) {
     console.error("The recipe could not be removed:", error);
-    throw new FavouritesError("The recipe could not be removed. Please try again.", error);
+    throw new FavouritesError(t("saved.removeFailed"), error);
+  }
+}
+
+/**
+ * Deletes every saved recipe belonging to one user.
+ *
+ * Used when an account is deleted. This runs while the user is still signed in,
+ * because the Firestore rules only allow a user to delete their own documents and
+ * that permission disappears with the account.
+ *
+ * @param {string} userId
+ * @returns {Promise<void>}
+ * @throws {FavouritesError}
+ */
+export async function removeAllFavourites(userId) {
+  try {
+    const snapshot = await getDocs(favouritesCollection(userId));
+
+    // The deletes are issued together rather than one after another, so a long
+    // list does not take one round trip per recipe.
+    await Promise.all(snapshot.docs.map((document) => deleteDoc(document.ref)));
+  } catch (error) {
+    console.error("The saved recipes could not be deleted:", error);
+    throw new FavouritesError(t("settings.deleteFailed"), error);
   }
 }

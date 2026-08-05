@@ -6,6 +6,7 @@
  * the rest of the page is hidden from screen readers.
  */
 
+import { t } from "../i18n/i18n.js";
 import { createElement } from "../utils/dom.js";
 
 /**
@@ -48,7 +49,7 @@ export function createRecipeDialog({ dialog, closeButton }) {
           className: "recipe-detail__image",
           attributes: {
             src: recipe.thumbnail,
-            alt: `Photograph of ${recipe.name}`,
+            alt: t("recipe.photograph", { name: recipe.name }),
             width: "600",
             height: "400",
           },
@@ -94,7 +95,7 @@ export function createRecipeDialog({ dialog, closeButton }) {
         createElement("p", {
           children: [
             createElement("a", {
-              text: "Watch the recipe on YouTube",
+              text: t("recipe.watchOnYouTube"),
               attributes: { href: recipe.youtubeUrl, rel: "noopener noreferrer", target: "_blank" },
             }),
           ],
@@ -108,7 +109,7 @@ export function createRecipeDialog({ dialog, closeButton }) {
   return {
     /** Opens the dialog with a loading message while the recipe is fetched. */
     showLoading() {
-      titleElement.textContent = "Loading recipe…";
+      titleElement.textContent = t("recipe.loading");
       bodyElement.replaceChildren();
 
       if (!dialog.open) {
@@ -134,7 +135,7 @@ export function createRecipeDialog({ dialog, closeButton }) {
      * @param {string} message
      */
     showError(message) {
-      titleElement.textContent = "The recipe could not be opened";
+      titleElement.textContent = t("recipe.openFailed");
       bodyElement.replaceChildren(
         createElement("p", { className: "status-message--error", text: message }),
       );

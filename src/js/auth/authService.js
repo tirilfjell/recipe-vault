@@ -9,11 +9,13 @@
 
 import {
   createUserWithEmailAndPassword,
+  deleteUser,
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
 
+import { t } from "../i18n/i18n.js";
 import { getFirebaseAuth } from "./firebase.js";
 
 /**
@@ -31,19 +33,21 @@ export class AuthError extends Error {
   }
 }
 
-/** Firebase error codes mapped to messages for the user. */
-const ERROR_MESSAGES = {
-  "auth/invalid-email": "That email address does not look right.",
-  "auth/missing-password": "Please enter your password.",
-  "auth/weak-password": "The password must be at least 6 characters long.",
-  "auth/email-already-in-use": "There is already an account with that email address. Try signing in instead.",
-  "auth/invalid-credential": "The email address or password is not correct.",
-  "auth/wrong-password": "The email address or password is not correct.",
-  "auth/user-not-found": "There is no account with that email address.",
-  "auth/too-many-requests": "Too many attempts. Please wait a moment before trying again.",
-  "auth/network-request-failed": "The server could not be reached. Please check your internet connection.",
-  "auth/operation-not-allowed":
-    "Email and password sign-in is not enabled for this Firebase project yet.",
+/* Firebase error codes mapped to translation keys. The key is looked up when the
+   error is thrown rather than here, so the message is always in the language the
+   user is currently reading. */
+const ERROR_KEYS = {
+  "auth/invalid-email": "validation.emailInvalid",
+  "auth/missing-password": "validation.passwordRequired",
+  "auth/weak-password": "validation.passwordShort",
+  "auth/email-already-in-use": "authError.emailInUse",
+  "auth/invalid-credential": "authError.wrongCredentials",
+  "auth/wrong-password": "authError.wrongCredentials",
+  "auth/user-not-found": "authError.noAccount",
+  "auth/too-many-requests": "authError.tooManyAttempts",
+  "auth/network-request-failed": "apiError.offline",
+  "auth/operation-not-allowed": "authError.notEnabled",
+  "auth/requires-recent-login": "settings.deleteNeedsRecentLogin",
 };
 
 /**
@@ -55,10 +59,7 @@ function toAuthError(error) {
   const code = error?.code ?? "";
   console.error("Authentication failed:", code || error);
 
-  return new AuthError(
-    ERROR_MESSAGES[code] ?? "Something went wrong while signing in. Please try again.",
-    error,
-  );
+  return new AuthError(t(ERROR_KEYS[code] ?? "authError.generic"), error);
 }
 
 /**
@@ -114,6 +115,33 @@ export async function register(email, password) {
 export async function signOutUser() {
   try {
     await signOut(getFirebaseAuth());
+  } catch (error) {
+    throw toAuthError(error);
+  }
+}
+
+/**
+ * Deletes the signed-in account.
+ *
+ * Only the account itself is removed here. The saved recipes are deleted first by
+ * the caller, because once the account is gone the Firestore rules would refuse
+ * the write and the documents would be left behind with no owner.
+ *
+ * Firebase refuses this with "auth/requires-recent-login" when the session is
+ * old, which is mapped above to an instruction to sign in again.
+ *
+ * @returns {Promise<void>}
+ * @throws {AuthError}
+ */
+export async function deleteAccount() {
+  const { currentUser } = getFirebaseAuth();
+
+  if (!currentUser) {
+    throw new AuthError(t("settings.deleteFailed"));
+  }
+
+  try {
+    await deleteUser(currentUser);
   } catch (error) {
     throw toAuthError(error);
   }
