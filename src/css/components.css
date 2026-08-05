@@ -2,17 +2,40 @@
 
 /* Button ----------------------------------------------------------------- */
 
+/* Fully rounded, ink-bordered pills. On hover they lift up and the offset
+   shadow grows; on press they sink back down, which gives the whole interface a
+   tactile feel without any JavaScript. */
 .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
   padding: var(--space-sm) var(--space-lg);
-  border: 1px solid transparent;
-  border-radius: var(--radius-md);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
+  text-decoration: none;
   cursor: pointer;
+  transition:
+    transform var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.button:hover:not(:disabled) {
+  transform: translate(-0.125rem, -0.125rem);
+  box-shadow: 0.25rem 0.25rem 0 var(--color-border);
+}
+
+.button:active:not(:disabled) {
+  transform: translate(0.0625rem, 0.0625rem);
+  box-shadow: none;
 }
 
 .button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -27,36 +50,32 @@
 
 .button--secondary {
   background-color: var(--color-surface);
-  color: var(--color-primary);
-  border-color: var(--color-primary);
+  color: var(--color-text);
 }
 
 .button--secondary:hover:not(:disabled) {
-  background-color: var(--color-surface-muted);
+  background-color: var(--color-accent-yellow);
 }
 
 .button--ghost {
   background-color: var(--color-surface-muted);
   color: var(--color-text);
-  border-color: var(--color-border);
 }
 
 .button--ghost:hover:not(:disabled) {
-  background-color: var(--color-border);
+  background-color: var(--color-accent-yellow);
 }
 
 /* A saved recipe keeps its own colour, and the button text says "Saved" as
    well, so the state does not rely on colour alone. */
 .button--ghost-active {
-  background-color: var(--color-accent-surface);
+  background-color: var(--color-accent-yellow);
   color: var(--color-accent-text);
-  border-color: var(--color-accent-text);
 }
 
 .button--danger {
   background-color: var(--color-surface);
   color: var(--color-danger);
-  border-color: var(--color-danger);
 }
 
 .button--danger:hover:not(:disabled) {
@@ -80,9 +99,10 @@
   padding: 0.125rem var(--space-sm);
   background-color: var(--color-accent-surface);
   color: var(--color-accent-text);
-  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
   font-size: 0.8125rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* Search form ------------------------------------------------------------ */
@@ -93,14 +113,17 @@
   margin-bottom: var(--space-lg);
   padding: var(--space-md);
   background-color: var(--color-surface-muted);
+  border: var(--border-ink);
   border-radius: var(--radius-lg);
 }
 
 .search-form__label {
   display: block;
   margin-bottom: var(--space-xs);
-  font-weight: 600;
+  font-weight: 700;
   font-size: var(--font-size-small);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .search-form__row {
@@ -112,12 +135,17 @@
 .search-form__input {
   flex: 1 1 12rem;
   min-width: 0;
-  padding: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   background-color: var(--color-surface);
   color: var(--color-text);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
   font: inherit;
+  transition: box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.search-form__input:focus {
+  box-shadow: 0.1875rem 0.1875rem 0 var(--color-primary);
 }
 
 .search-form__filters {
@@ -128,12 +156,14 @@
 
 .search-form__select {
   width: 100%;
-  padding: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   background-color: var(--color-surface);
   color: var(--color-text);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
   font: inherit;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 /* Recipe card ------------------------------------------------------------ */
@@ -142,18 +172,78 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden;
+  padding: var(--space-sm);
   background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  /* Both the border and the shadow read from the same two custom properties,
+     which the rotation below overrides per card. */
+  border: 2px solid var(--card-border, var(--color-border));
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0.375rem 0.375rem 0 var(--card-shadow, var(--color-shadow));
+  transition:
+    transform var(--duration-mid) var(--ease-out),
+    box-shadow var(--duration-mid) var(--ease-out);
+}
+
+.recipe-card:hover {
+  transform: translate(-0.25rem, -0.25rem);
+  box-shadow: 0.75rem 0.75rem 0 var(--card-shadow, var(--color-shadow));
+}
+
+/* Each card takes one of five border-and-shadow pairings, cycling down the
+   grid so neighbouring cards never match. The pairs are chosen so the shadow
+   always contrasts against the border rather than blending into it. */
+.recipe-grid__item:nth-child(5n + 1) .recipe-card {
+  --card-border: var(--color-text);
+  --card-shadow: var(--color-accent-pink);
+}
+
+.recipe-grid__item:nth-child(5n + 2) .recipe-card {
+  --card-border: #2727e6;
+  --card-shadow: var(--color-accent-yellow);
+}
+
+.recipe-grid__item:nth-child(5n + 3) .recipe-card {
+  --card-border: #16ab59;
+  --card-shadow: var(--color-accent-sky);
+}
+
+.recipe-grid__item:nth-child(5n + 4) .recipe-card {
+  --card-border: #ff4141;
+  --card-shadow: var(--color-accent-yellow);
+}
+
+.recipe-grid__item:nth-child(5n + 5) .recipe-card {
+  --card-border: var(--color-text);
+  --card-shadow: var(--color-accent-sky);
+}
+
+/* The two blues need lifting in the dark theme, where #2727e6 all but
+   disappears against the surface. */
+[data-theme="dark"] .recipe-grid__item:nth-child(5n + 2) .recipe-card {
+  --card-border: #8f8fff;
+}
+
+[data-theme="dark"] .recipe-grid__item:nth-child(5n + 3) .recipe-card {
+  --card-border: #4ade80;
+}
+
+/* The photograph is clipped to a generous radius, which is the detail that
+   makes the cards read as playful rather than as plain boxes. */
+.recipe-card__image-frame {
+  overflow: hidden;
+  border-radius: var(--radius-blob) var(--radius-blob) var(--radius-md)
+    var(--radius-md);
 }
 
 .recipe-card__image {
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  border-bottom: 1px solid var(--color-border);
+  transition: transform 400ms var(--ease-out);
+}
+
+.recipe-card:hover .recipe-card__image {
+  transform: scale(1.06);
 }
 
 .recipe-card__body {
@@ -183,9 +273,16 @@
 
 .recipe-card__actions {
   display: flex;
-  flex-wrap: wrap;
   gap: var(--space-sm);
   margin-top: auto;
+}
+
+/* The two buttons share the row evenly. Without a zero basis the pill padding
+   makes them wider than the card and they wrap onto separate lines. */
+.recipe-card__actions .button {
+  flex: 1 1 0;
+  padding-inline: var(--space-sm);
+  white-space: nowrap;
 }
 
 /* Saved recipe entry ----------------------------------------------------- */
@@ -195,7 +292,11 @@
   gap: var(--space-sm);
   padding: var(--space-md);
   background-color: var(--color-surface-muted);
+  border: var(--border-ink);
   border-radius: var(--radius-lg);
+  /* Each entry pops in when the Firestore listener adds it, which makes the
+     save feel like it landed somewhere. */
+  animation: pop-in var(--duration-mid) var(--ease-out) both;
 }
 
 .favourite__title {
@@ -230,11 +331,11 @@
 .favourite__note-input {
   flex: 1 1 8rem;
   min-width: 0;
-  padding: var(--space-xs) var(--space-sm);
+  padding: var(--space-xs) var(--space-md);
   background-color: var(--color-surface);
   color: var(--color-text);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
   font: inherit;
   font-size: var(--font-size-small);
 }
@@ -268,12 +369,19 @@
   padding: 0;
   background-color: var(--color-surface);
   color: var(--color-text);
-  border: 1px solid var(--color-border);
+  border: var(--border-ink);
   border-radius: var(--radius-lg);
+  box-shadow: 0.5rem 0.5rem 0 var(--color-border);
+}
+
+/* [open] is needed so the animation runs when the dialog is shown rather than
+   on first paint, while it is still hidden. */
+.recipe-dialog[open] {
+  animation: pop-in var(--duration-mid) var(--ease-out) both;
 }
 
 .recipe-dialog::backdrop {
-  background-color: rgba(36, 32, 28, 0.6);
+  background-color: rgba(17, 17, 24, 0.55);
 }
 
 .recipe-dialog__header {
@@ -307,7 +415,9 @@
 
 .recipe-detail__image {
   width: 100%;
-  border-radius: var(--radius-md);
+  border: var(--border-ink);
+  border-radius: var(--radius-blob) var(--radius-blob) var(--radius-md)
+    var(--radius-md);
   margin-bottom: var(--space-md);
 }
 
@@ -326,13 +436,97 @@
   display: grid;
   grid-template-columns: minmax(5rem, 8rem) 1fr;
   gap: var(--space-sm);
-  padding: var(--space-xs) 0;
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px dashed var(--color-border);
 }
 
 .ingredient-list__measure {
   color: var(--color-text-muted);
   font-size: var(--font-size-small);
+}
+
+/* Dinner wheel ----------------------------------------------------------- */
+
+.dinner-wheel {
+  display: grid;
+  place-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.dinner-wheel__stage {
+  position: relative;
+  width: 100%;
+  max-width: 15rem;
+  aspect-ratio: 1;
+}
+
+.dinner-wheel__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0.25rem 0.25rem 0 var(--color-shadow));
+}
+
+/* The spin is one long rotation with a heavy ease-out, so the wheel rushes off
+   and then creeps into its final position the way a real wheel does. */
+.dinner-wheel__group {
+  transform-origin: 50% 50%;
+  transition: transform 4000ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* The pointer marks the winning segment at the top of the wheel. */
+.dinner-wheel__pointer {
+  position: absolute;
+  top: -0.5rem;
+  left: 50%;
+  z-index: 2;
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border-right: 0.6rem solid transparent;
+  border-left: 0.6rem solid transparent;
+  border-top: 1rem solid var(--color-text);
+}
+
+.dinner-wheel__hub {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  transform: translate(-50%, -50%);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+}
+
+/* A short wobble once the wheel stops, to mark the result. */
+.dinner-wheel--celebrating .dinner-wheel__hub {
+  animation: wheel-pop 600ms var(--ease-out) 2;
+}
+
+@keyframes wheel-pop {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+}
+
+.dinner-wheel__status {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+  text-align: center;
 }
 
 /* Status and feedback messages ------------------------------------------- */
@@ -363,9 +557,10 @@
 .feedback {
   margin-bottom: var(--space-lg);
   padding: var(--space-md);
-  border: 1px solid transparent;
+  border: var(--border-ink);
   border-radius: var(--radius-md);
-  font-weight: 600;
+  font-weight: 700;
+  animation: rise-in var(--duration-mid) var(--ease-out) both;
 }
 
 .feedback--success {

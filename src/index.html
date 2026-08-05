@@ -11,18 +11,29 @@
   </head>
 
   <body class="page">
-    <a class="skip-link" href="#main-content">Skip to main content</a>
+    <a class="skip-link" href="#main-content" data-i18n="app.skipLink">Skip to main content</a>
 
     <header class="site-header">
       <div class="site-header__inner">
         <p class="site-header__brand">
           <span class="site-header__mark" aria-hidden="true">RV</span>
-          Recipe Vault
+          <span data-i18n="app.name">Recipe Vault</span>
         </p>
+
+        <!-- The screen navigation. Only shown once somebody is signed in, since
+             every screen behind it needs an account. -->
+        <nav class="screen-nav" data-screen-nav-wrapper aria-label="Recipe Vault" hidden>
+          <div class="screen-nav__links" data-screen-nav></div>
+        </nav>
 
         <div class="account-bar" data-account-bar hidden>
           <span class="account-bar__email" data-account-email></span>
-          <button class="button button--ghost button--small" type="button" data-sign-out>
+          <button
+            class="button button--ghost button--small"
+            type="button"
+            data-sign-out
+            data-i18n="app.signOut"
+          >
             Sign out
           </button>
         </div>
@@ -36,8 +47,13 @@
       <!-- Shown while nobody is signed in -->
       <section class="auth-view" data-auth-view aria-labelledby="auth-title">
         <div class="auth-view__intro">
-          <h1 id="auth-title">Your recipes, in one place</h1>
-          <p class="auth-view__lead">
+          <!-- Decorative only: hidden from assistive technology, because they
+               carry no information. -->
+          <span class="auth-view__shape auth-view__shape--circle" aria-hidden="true"></span>
+          <span class="auth-view__shape auth-view__shape--blob" aria-hidden="true"></span>
+
+          <h1 id="auth-title" data-i18n="auth.title">Your recipes, in one place</h1>
+          <p class="auth-view__lead" data-i18n="auth.lead">
             Search thousands of recipes, open the full method and ingredient list, and keep the
             ones you like in your own account. Sign in to get started.
           </p>
@@ -46,7 +62,7 @@
         <div class="auth-card">
           <!-- Shown when the project has no Firebase configuration yet -->
           <div class="status-message status-message--error" data-setup-notice hidden>
-            <h2 class="status-message__title">Firebase is not configured yet</h2>
+            <h2 class="status-message__title" data-i18n="setup.title">Firebase is not configured yet</h2>
             <p>
               Copy <code>.env.example</code> to <code>.env</code> and fill in the values from your
               own Firebase project, then start the app again. The steps are described in
@@ -57,12 +73,13 @@
           <!-- novalidate: the validation and the messages are handled in
                authPanel.js, so every field reports problems the same way. -->
           <form class="auth-form" data-auth-form novalidate>
-            <div class="mode-switch" role="group" aria-label="Choose sign in or create account">
+            <div class="mode-switch" role="group" data-i18n-aria-label="auth.modeLabel" aria-label="Choose sign in or create account">
               <button
                 class="mode-switch__button mode-switch__button--active"
                 type="button"
                 data-auth-mode="sign-in"
                 aria-pressed="true"
+                data-i18n="auth.signIn"
               >
                 Sign in
               </button>
@@ -71,6 +88,7 @@
                 type="button"
                 data-auth-mode="register"
                 aria-pressed="false"
+                data-i18n="auth.createAccount"
               >
                 Create account
               </button>
@@ -79,7 +97,7 @@
             <p class="auth-form__hint" data-auth-hint></p>
 
             <div class="auth-form__field">
-              <label class="auth-form__label" for="email">Email address</label>
+              <label class="auth-form__label" for="email" data-i18n="auth.email">Email address</label>
               <input
                 class="auth-form__input"
                 type="email"
@@ -93,7 +111,7 @@
             </div>
 
             <div class="auth-form__field">
-              <label class="auth-form__label" for="password">Password</label>
+              <label class="auth-form__label" for="password" data-i18n="auth.password">Password</label>
               <input
                 class="auth-form__input"
                 type="password"
@@ -113,87 +131,197 @@
         </div>
       </section>
 
-      <!-- Shown once a user is signed in -->
+      <!-- Shown once a user is signed in. Each screen below is one of the
+           entries in the header navigation, and only one is ever visible. -->
       <div class="app-view" data-app-view hidden>
-        <section class="panel" aria-labelledby="browse-title">
-          <div class="panel__header">
-            <h1 class="panel__title" id="browse-title">Browse recipes</h1>
-            <p class="panel__count" data-result-summary></p>
-          </div>
-
-          <form class="search-form" data-search-form role="search">
-            <div class="search-form__field">
-              <label class="search-form__label" for="searchTerm">Search by name</label>
-              <div class="search-form__row">
-                <input
-                  class="search-form__input"
-                  type="search"
-                  id="searchTerm"
-                  name="searchTerm"
-                  placeholder="For example: pasta"
-                  autocomplete="off"
-                />
-                <button class="button button--primary" type="submit" name="searchButton">
-                  Search
-                </button>
+        <!-- Screen: browse ------------------------------------------------- -->
+        <div class="screen" data-screen="browse">
+          <div class="browse-layout">
+            <section class="panel" aria-labelledby="browse-title">
+              <div class="panel__header">
+                <h1 class="panel__title" id="browse-title" data-i18n="browse.title">
+                  Browse recipes
+                </h1>
+                <p class="panel__count" data-result-summary></p>
               </div>
+
+              <form class="search-form" data-search-form role="search">
+                <div class="search-form__field">
+                  <label
+                    class="search-form__label"
+                    for="searchTerm"
+                    data-i18n="browse.searchLabel"
+                  >
+                    Search by name
+                  </label>
+                  <div class="search-form__row">
+                    <input
+                      class="search-form__input"
+                      type="search"
+                      id="searchTerm"
+                      name="searchTerm"
+                      data-i18n-placeholder="browse.searchPlaceholder"
+                      autocomplete="off"
+                    />
+                    <button
+                      class="button button--primary"
+                      type="submit"
+                      name="searchButton"
+                      data-i18n="browse.searchButton"
+                    >
+                      Search
+                    </button>
+                  </div>
+                </div>
+
+                <div class="search-form__filters">
+                  <div class="search-form__field">
+                    <label
+                      class="search-form__label"
+                      for="categoryFilter"
+                      data-i18n="browse.categoryLabel"
+                    >
+                      Category
+                    </label>
+                    <select class="search-form__select" id="categoryFilter" data-category-filter>
+                      <option value="">All categories</option>
+                    </select>
+                  </div>
+
+                  <div class="search-form__field">
+                    <label class="search-form__label" for="sortOrder" data-i18n="browse.sortLabel">
+                      Sort by
+                    </label>
+                    <select class="search-form__select" id="sortOrder" data-sort-order></select>
+                  </div>
+                </div>
+              </form>
+
+              <div
+                class="status-message"
+                role="status"
+                aria-live="polite"
+                data-recipe-status
+                hidden
+              ></div>
+
+              <ul class="recipe-grid" data-recipe-list></ul>
+            </section>
+
+            <!-- The dinner wheel picks a recipe at random for anyone who cannot
+                 decide what to cook. -->
+            <section class="panel" aria-labelledby="wheel-title">
+              <div class="panel__header">
+                <h2 class="panel__title" id="wheel-title" data-i18n="wheel.title">
+                  Can't decide?
+                </h2>
+              </div>
+
+              <div class="dinner-wheel">
+                <div class="dinner-wheel__stage" data-dinner-wheel>
+                  <span class="dinner-wheel__pointer" aria-hidden="true"></span>
+                  <span class="dinner-wheel__hub" aria-hidden="true">RV</span>
+                </div>
+              </div>
+
+              <button
+                class="button button--primary button--full"
+                type="button"
+                data-spin-wheel
+                data-i18n="wheel.spin"
+              >
+                Spin the wheel
+              </button>
+
+              <p
+                class="dinner-wheel__status"
+                role="status"
+                aria-live="polite"
+                data-wheel-status
+              ></p>
+            </section>
+          </div>
+        </div>
+
+        <!-- Screen: saved recipes ------------------------------------------ -->
+        <div class="screen" data-screen="saved" hidden>
+          <section class="panel" aria-labelledby="saved-title">
+            <div class="panel__header">
+              <h1 class="panel__title" id="saved-title" data-i18n="saved.title">Saved recipes</h1>
+              <p class="panel__count" data-favourites-count></p>
             </div>
 
-            <div class="search-form__filters">
-              <div class="search-form__field">
-                <label class="search-form__label" for="categoryFilter">Category</label>
-                <select class="search-form__select" id="categoryFilter" data-category-filter>
-                  <option value="">All categories</option>
-                </select>
-              </div>
+            <div
+              class="status-message"
+              role="status"
+              aria-live="polite"
+              data-favourites-status
+              hidden
+            ></div>
 
-              <div class="search-form__field">
-                <label class="search-form__label" for="sortOrder">Sort by</label>
-                <select class="search-form__select" id="sortOrder" data-sort-order></select>
-              </div>
+            <ul class="favourites favourites--screen" data-favourites-list></ul>
+          </section>
+        </div>
+
+        <!-- Screen: settings ---------------------------------------------- -->
+        <div class="screen" data-screen="settings" hidden>
+          <section class="panel" aria-labelledby="settings-title">
+            <div class="panel__header">
+              <h1 class="panel__title" id="settings-title" data-i18n="settings.title">Settings</h1>
             </div>
-          </form>
 
-          <div
-            class="status-message"
-            role="status"
-            aria-live="polite"
-            data-recipe-status
-            hidden
-          ></div>
-
-          <ul class="recipe-grid" data-recipe-list></ul>
-        </section>
-
-        <section class="panel" aria-labelledby="saved-title">
-          <div class="panel__header">
-            <h2 class="panel__title" id="saved-title">Saved recipes</h2>
-            <p class="panel__count">
-              <span data-favourites-count>0</span> saved
-            </p>
-          </div>
-
-          <div
-            class="status-message"
-            role="status"
-            aria-live="polite"
-            data-favourites-status
-            hidden
-          ></div>
-
-          <ul class="favourites" data-favourites-list></ul>
-        </section>
+            <div class="settings" data-settings-panel></div>
+          </section>
+        </div>
       </div>
     </main>
 
     <footer class="site-footer">
       <div class="site-footer__inner">
-        <p>
-          Recipe data from
-          <a href="https://www.themealdb.com/api.php">TheMealDB</a>. Accounts and saved recipes are
-          handled by Firebase.
+        <div class="site-footer__brand">
+          <span class="site-footer__logo" aria-hidden="true">RV</span>
+          <p class="site-footer__tagline" data-i18n="footer.tagline">
+            Your recipes, in one place. Search, cook and keep the ones you love.
+          </p>
+        </div>
+
+        <!-- A nav landmark is used because these are links to other places,
+             which lets a screen reader jump to them as a group. -->
+        <nav class="site-footer__nav" data-i18n-aria-label="footer.label" aria-label="Footer">
+          <h2 class="site-footer__heading" data-i18n="footer.recipesHeading">Recipes</h2>
+          <ul class="site-footer__list">
+            <li><a class="site-footer__link" href="#browse-title">Browse recipes</a></li>
+            <li><a class="site-footer__link" href="#saved-title">Saved recipes</a></li>
+          </ul>
+        </nav>
+
+        <div class="site-footer__nav">
+          <h2 class="site-footer__heading" data-i18n="footer.aboutHeading">About</h2>
+          <ul class="site-footer__list">
+            <li>
+              <a
+                class="site-footer__link"
+                href="https://www.themealdb.com/api.php"
+                target="_blank"
+                rel="noopener noreferrer"
+                 data-i18n="footer.dataCredit">Recipe data by TheMealDB</a
+              >
+            </li>
+            <li>
+              <a
+                class="site-footer__link"
+                href="https://firebase.google.com/docs/auth"
+                target="_blank"
+                rel="noopener noreferrer"
+                 data-i18n="footer.authCredit">Accounts secured by Firebase</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <p class="site-footer__legal" data-i18n="footer.legal">
+          &copy; 2026 Recipe Vault. Recipe content belongs to its respective authors.
         </p>
-        <p>Final project &ndash; FFU1200 Production of Frontend Development.</p>
       </div>
     </footer>
 
@@ -205,7 +333,7 @@
           class="button button--ghost button--small"
           type="button"
           data-dialog-close
-          aria-label="Close the recipe"
+          data-i18n-aria-label="recipe.closeLabel" aria-label="Close the recipe"
         >
           Close
         </button>

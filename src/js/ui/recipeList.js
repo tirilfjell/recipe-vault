@@ -6,6 +6,7 @@
  * about the API or about Firestore.
  */
 
+import { t } from "../i18n/i18n.js";
 import { createElement } from "../utils/dom.js";
 import placeholderImage from "../../assets/img/recipe-placeholder.svg";
 
@@ -55,7 +56,7 @@ export function createRecipeList({
         // The API image is used when it exists, with a local drawing as the
         // fallback so a card is never left with a broken image.
         src: recipe.thumbnail || placeholderImage,
-        alt: `Photograph of ${recipe.name}`,
+        alt: t("recipe.photograph", { name: recipe.name }),
         loading: "lazy",
         width: "400",
         height: "300",
@@ -66,7 +67,7 @@ export function createRecipeList({
       "error",
       () => {
         image.src = placeholderImage;
-        image.alt = `No photograph available for ${recipe.name}`;
+        image.alt = t("recipe.noPhotograph", { name: recipe.name });
       },
       { once: true },
     );
@@ -81,17 +82,17 @@ export function createRecipeList({
 
     const openButton = createElement("button", {
       className: "button button--secondary",
-      text: "View recipe",
+      text: t("recipe.view"),
       attributes: {
         type: "button",
         "data-open-recipe": recipe.id,
-        "aria-label": `View the recipe for ${recipe.name}`,
+        "aria-label": t("recipe.viewLabel", { name: recipe.name }),
       },
     });
 
     const favouriteButton = createElement("button", {
       className: `button button--ghost${isSaved ? " button--ghost-active" : ""}`,
-      text: isSaved ? "Saved" : "Save",
+      text: isSaved ? t("recipe.saved") : t("recipe.save"),
       attributes: {
         type: "button",
         "data-toggle-favourite": recipe.id,
@@ -99,8 +100,8 @@ export function createRecipeList({
         // The state is spelled out, because a colour change alone is not
         // available to a screen reader.
         "aria-label": isSaved
-          ? `Remove ${recipe.name} from your saved recipes`
-          : `Save ${recipe.name} to your recipes`,
+          ? t("recipe.removeLabel", { name: recipe.name })
+          : t("recipe.saveLabel", { name: recipe.name }),
       },
     });
 
@@ -110,7 +111,12 @@ export function createRecipeList({
         createElement("article", {
           className: "recipe-card",
           children: [
-            image,
+            // The frame clips the photograph to the card's rounded corners and
+            // is what the hover zoom is contained by.
+            createElement("div", {
+              className: "recipe-card__image-frame",
+              children: [image],
+            }),
             createElement("div", {
               className: "recipe-card__body",
               children: [
@@ -147,7 +153,7 @@ export function createRecipeList({
      */
     render(recipes, savedIds) {
       if (recipes.length === 0) {
-        showStatus("No recipes matched. Try another search term or another category.");
+        showStatus(t("browse.noMatches"));
         return;
       }
 
@@ -155,13 +161,25 @@ export function createRecipeList({
       statusElement.textContent = "";
 
       const fragment = document.createDocumentFragment();
-      recipes.forEach((recipe) => fragment.append(createCard(recipe, savedIds.has(recipe.id))));
+
+      recipes.forEach((recipe, index) => {
+        const item = createCard(recipe, savedIds.has(recipe.id));
+
+        // The cards cascade in rather than all appearing at once. The delay is
+        // capped so a long result set never leaves the last card waiting, and
+        // the animation itself is disabled under prefers-reduced-motion.
+        item.classList.add("is-animated");
+        item.style.animationDelay = `${Math.min(index, 12) * 40}ms`;
+
+        fragment.append(item);
+      });
+
       listElement.replaceChildren(fragment);
     },
 
     /** Shows the loading state. */
     showLoading() {
-      showStatus("Loading recipes…");
+      showStatus(t("browse.loading"));
     },
 
     /**

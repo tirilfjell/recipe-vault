@@ -2,8 +2,9 @@
 
 .auth-view {
   display: grid;
-  gap: var(--space-xl);
+  gap: var(--space-2xl) var(--space-xl);
   align-items: center;
+  padding-block: var(--space-xl);
 }
 
 .auth-view[hidden] {
@@ -24,16 +25,79 @@
 .auth-view__lead {
   max-width: 34rem;
   color: var(--color-text-muted);
-  font-size: 1.125rem;
+  font-size: 1.25rem;
+}
+
+/* Decorative shapes behind the hero, in the flat accent colours. They are
+   purely visual, so they are hidden from assistive technology.
+
+   The text is raised into its own stacking context instead of pushing the
+   shapes behind the page with a negative z-index, which would put them behind
+   the background and hide them entirely. */
+.auth-view__intro {
+  position: relative;
+  isolation: isolate;
+}
+
+.auth-view__intro > :not(.auth-view__shape) {
+  position: relative;
+  z-index: 1;
+}
+
+.auth-view__shape {
+  position: absolute;
+  z-index: 0;
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Both shapes are kept clear of the text rather than sitting under it, so the
+   heading and the lead paragraph stay at full contrast. */
+.auth-view__shape--circle {
+  top: -1.5rem;
+  left: 0;
+  width: 4.5rem;
+  height: 4.5rem;
+  background-color: var(--color-accent-sky);
+  border-radius: var(--radius-pill);
+}
+
+.auth-view__shape--blob {
+  right: 1rem;
+  bottom: -2.5rem;
+  width: 7rem;
+  height: 7rem;
+  background-color: var(--color-accent-pink);
+  border-radius: 70% 30% 55% 45% / 45% 55% 40% 60%;
+  animation-delay: -3s;
+}
+
+/* The shapes are ornament, so they are dropped on small screens where there is
+   no room for them beside the text. */
+@media (max-width: 60rem) {
+  .auth-view__shape {
+    display: none;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-0.75rem) rotate(6deg);
+  }
 }
 
 .auth-card {
   min-width: 0;
   padding: var(--space-lg);
   background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: var(--border-ink);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-panel);
+  box-shadow: 0.5rem 0.5rem 0 var(--color-border);
+  animation: rise-in var(--duration-mid) var(--ease-out) both;
 }
 
 /* Mode switch (sign in / create account) --------------------------------- */
@@ -44,7 +108,8 @@
   margin-bottom: var(--space-md);
   padding: var(--space-xs);
   background-color: var(--color-surface-muted);
-  border-radius: var(--radius-md);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
 }
 
 .mode-switch__button {
@@ -53,17 +118,19 @@
   background-color: transparent;
   color: var(--color-text-muted);
   border: none;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-pill);
   font: inherit;
   font-size: var(--font-size-small);
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
 }
 
 .mode-switch__button--active {
-  background-color: var(--color-surface);
-  color: var(--color-text);
-  box-shadow: var(--shadow-panel);
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
 }
 
 /* Auth form -------------------------------------------------------------- */
@@ -81,17 +148,25 @@
 .auth-form__label {
   display: block;
   margin-bottom: var(--space-xs);
-  font-weight: 600;
+  font-weight: 700;
+  font-size: var(--font-size-small);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
 .auth-form__input {
   width: 100%;
-  padding: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
   background-color: var(--color-surface);
   color: var(--color-text);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
   font: inherit;
+  transition: box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.auth-form__input:focus {
+  box-shadow: 0.1875rem 0.1875rem 0 var(--color-primary);
 }
 
 .auth-form__input[aria-invalid="true"] {

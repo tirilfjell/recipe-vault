@@ -16,9 +16,13 @@
 
 /* Site header ------------------------------------------------------------ */
 
+/* The header is a floating pill rather than a full-width bar, which lets the
+   background colour run behind it. */
 .site-header {
-  background-color: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: var(--space-md) var(--space-md) 0;
 }
 
 .site-header__inner {
@@ -29,7 +33,11 @@
   gap: var(--space-md);
   max-width: var(--layout-max-width);
   margin: 0 auto;
-  padding: var(--space-md);
+  padding: var(--space-sm) var(--space-lg);
+  background-color: var(--color-surface);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-panel);
 }
 
 .site-header__brand {
@@ -39,6 +47,7 @@
   margin: 0;
   font-size: var(--font-size-title);
   font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .site-header__mark {
@@ -48,9 +57,16 @@
   height: 2.25rem;
   background-color: var(--color-primary);
   color: var(--color-primary-contrast);
-  border-radius: var(--radius-md);
+  /* A circle, to echo the pill shapes used across the interface. */
+  border-radius: var(--radius-pill);
   font-size: var(--font-size-small);
+  font-weight: 700;
   letter-spacing: 0.05em;
+  transition: transform var(--duration-mid) var(--ease-out);
+}
+
+.site-header__brand:hover .site-header__mark {
+  transform: rotate(-8deg) scale(1.08);
 }
 
 .account-bar {
@@ -71,21 +87,72 @@
 
 /* App view --------------------------------------------------------------- */
 
-/* One column on small screens, saved recipes beside the browser from 68rem. */
-.app-view {
+.app-view[hidden] {
+  display: none;
+}
+
+/* Only one screen is in the flow at a time. */
+.screen[hidden] {
+  display: none;
+}
+
+/* The browse screen: the recipe grid with the dinner wheel beside it. The wheel
+   sits in the top right from 68rem and drops above the grid on narrower
+   screens, where there is no room for a second column. */
+.browse-layout {
   display: grid;
   gap: var(--space-lg);
   align-items: start;
 }
 
-.app-view[hidden] {
+@media (min-width: 68rem) {
+  .browse-layout {
+    grid-template-columns: 1fr 22rem;
+  }
+}
+
+/* Screen navigation ------------------------------------------------------ */
+
+.screen-nav[hidden] {
   display: none;
 }
 
-@media (min-width: 68rem) {
-  .app-view {
-    grid-template-columns: 1fr 22rem;
-  }
+.screen-nav__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.screen-nav__link {
+  padding: var(--space-xs) var(--space-md);
+  color: var(--color-text);
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+}
+
+.screen-nav__link:hover {
+  background-color: var(--color-surface-muted);
+  color: var(--color-text);
+}
+
+/* The current screen is marked with a filled pill as well as aria-current, so
+   it does not rely on colour alone. */
+.screen-nav__link--current {
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  border-color: var(--color-border);
+}
+
+.screen-nav__link--current:hover {
+  background-color: var(--color-primary-dark);
+  color: var(--color-primary-contrast);
 }
 
 .panel {
@@ -94,7 +161,7 @@
   min-width: 0;
   padding: var(--space-lg);
   background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: var(--border-ink);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-panel);
 }
@@ -109,13 +176,21 @@
 
 .panel__title {
   margin-bottom: var(--space-md);
-  font-size: 1.5rem;
+  font-size: var(--font-size-subheading);
 }
 
+/* The count is set as a pill so it reads as a piece of the interface rather
+   than as stray text next to the heading. */
 .panel__count {
   margin-bottom: var(--space-md);
-  color: var(--color-text-muted);
+  padding: 0.125rem var(--space-sm);
+  background-color: var(--color-accent-yellow);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
   font-size: var(--font-size-small);
+  font-weight: 700;
+  white-space: nowrap;
 }
 
 /* Recipe grid ------------------------------------------------------------ */
@@ -139,6 +214,86 @@
   list-style: none;
 }
 
+/* On its own screen the saved list has the full width to work with, so the
+   entries sit side by side instead of in one narrow column. */
+.favourites--screen {
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+}
+
+/* Settings screen -------------------------------------------------------- */
+
+.settings {
+  display: grid;
+  gap: var(--space-xl);
+}
+
+.settings__section {
+  display: grid;
+  gap: var(--space-sm);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.settings__section:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.settings__heading {
+  margin: 0;
+  font-size: var(--font-size-title);
+}
+
+.settings__hint {
+  margin: 0;
+  max-width: 44ch;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-small);
+}
+
+.settings__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.settings__confirm {
+  display: grid;
+  gap: var(--space-sm);
+  justify-items: start;
+  max-width: 22rem;
+  padding: var(--space-md);
+  background-color: var(--color-danger-surface);
+  border: 2px solid var(--color-danger);
+  border-radius: var(--radius-md);
+}
+
+.settings__label {
+  font-size: var(--font-size-small);
+  font-weight: 700;
+}
+
+.settings__input {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
+  font: inherit;
+}
+
+.settings__error {
+  margin: 0;
+  color: var(--color-danger);
+  font-size: var(--font-size-small);
+  font-weight: 700;
+}
+
+.settings__error:empty {
+  display: none;
+}
+
 /* Site footer ------------------------------------------------------------ */
 
 .site-footer {
@@ -148,12 +303,78 @@
   font-size: var(--font-size-small);
 }
 
+/* One column on a phone. From 48rem the brand sits beside the link columns,
+   and the legal line spans the full width underneath. */
 .site-footer__inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
   max-width: var(--layout-max-width);
   margin: 0 auto;
-  padding: var(--space-lg) var(--space-md);
+  padding: var(--space-xl) var(--space-md);
 }
 
-.site-footer__inner p:last-child {
-  margin-bottom: 0;
+.site-footer__brand {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.site-footer__logo {
+  flex-shrink: 0;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-md);
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+  font-weight: 700;
+}
+
+.site-footer__tagline {
+  margin: 0;
+  max-width: 28ch;
+}
+
+.site-footer__heading {
+  margin: 0 0 var(--space-sm);
+  color: var(--color-text);
+  font-size: var(--font-size-small);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.site-footer__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-footer__list li + li {
+  margin-top: var(--space-xs);
+}
+
+.site-footer__link {
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.site-footer__link:hover,
+.site-footer__link:focus-visible {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.site-footer__legal {
+  margin: 0;
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--color-border);
+}
+
+@media (min-width: 48rem) {
+  .site-footer__inner {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+
+  .site-footer__legal {
+    grid-column: 1 / -1;
+  }
 }
