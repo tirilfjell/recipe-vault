@@ -9,7 +9,7 @@ Firebase.
 
 ## Links
 
-- **GitHub repository:** _add the URL here after pushing the repository_
+- **GitHub repository:** https://github.com/tirilfjell/recipe-vault
 - **Live version (Netlify or Firebase Hosting):** _add the URL here after deploying_
 - **Figma prototype:** `prototype.fig` in this folder
 
@@ -29,9 +29,21 @@ Firebase.
 - **Saved recipes.** Save a recipe to your account, add a personal note to it, and remove it
   again. The list updates itself through a Firestore listener, so it stays correct even with the
   app open in two tabs.
+- **Three screens.** The signed-in area is split into the recipe browser, the saved recipes and
+  the settings, reached from the header. The current screen is kept in the URL, so the browser's
+  back button works and a screen can be linked to directly.
+- **The dinner wheel.** A spinning wheel that picks a recipe at random for anyone who cannot
+  decide what to cook. It offers whatever is currently on screen, so narrowing the category
+  narrows the wheel too.
+- **Two languages.** The whole interface switches between English and Norwegian without a reload.
+  The choice is remembered on the device.
+- **Light and dark.** Follows the operating system until a choice is made, and remembers it after.
+- **Delete my account.** Removes the account and every saved recipe, behind a type-to-confirm step.
 - **Error handling.** Failed requests, timeouts, rejected sign-ins and refused database writes
   are all reported to the user in plain language.
 - **Responsive.** One column on a phone, two from 1088 px upwards.
+- **Motion.** Cards cascade in, hover states lift, the wheel spins. All of it is switched off for
+  anyone whose system asks for reduced motion.
 
 ## Setting up Firebase
 
@@ -78,6 +90,7 @@ Deploy the contents of `dist/` – that is the folder to point Netlify or Fireba
 Final_project/
 ├── webpack.config.js       Build configuration, injects the Firebase settings
 ├── firestore.rules         Database rules: a user may only touch their own data
+├── firebase.json           Rules and Hosting configuration for the Firebase CLI
 ├── .env.example            Template for the local .env file
 ├── package.json
 ├── readme.md
@@ -97,16 +110,24 @@ Final_project/
     │   │   └── ApiError.js
     │   ├── auth/
     │   │   ├── firebase.js     Creates the Firebase services, lazily
-    │   │   └── authService.js  Sign in, register, sign out, state changes
+    │   │   └── authService.js  Sign in, register, sign out, delete, state changes
     │   ├── features/
     │   │   ├── favouritesRepository.js  The saved recipes, in Firestore
-    │   │   └── recipeFilters.js         Filtering and sorting, pure functions
+    │   │   ├── recipeFilters.js         Filtering and sorting, pure functions
+    │   │   └── themeService.js          Light and dark
+    │   ├── i18n/
+    │   │   ├── translations.js       Every string, in English and Norwegian
+    │   │   ├── i18n.js               t(), the current language and listeners
+    │   │   └── applyTranslations.js  Translates the static markup
     │   ├── ui/
     │   │   ├── authPanel.js       The sign-in form and its validation
+    │   │   ├── screenNav.js       The three screens and the URL hash
     │   │   ├── searchControls.js  Search field, category filter, sort order
     │   │   ├── recipeList.js      The grid of recipe cards
     │   │   ├── recipeDialog.js    The recipe detail dialog
     │   │   ├── favouritesList.js  Saved recipes, notes and removal
+    │   │   ├── dinnerWheel.js     The spinning wheel that picks a recipe
+    │   │   ├── settingsPanel.js   Language, appearance, account deletion
     │   │   └── feedback.js        Confirmations and errors
     │   └── utils/
     │       ├── dom.js         Element helpers
@@ -130,6 +151,8 @@ Every module does one job and knows as little as possible about the others:
   which makes the filtering and sorting easy to follow.
 - **`ui/*`** modules build and update their own part of the page. They hold no data and report
   what happened through callbacks.
+- **`i18n/*`** holds every user-facing string. A module asks for a string by key rather than
+  writing it, which is what makes a second language a matter of adding one object.
 - **`index.js`** is the only module that knows about all of them. It holds the state and connects
   them, so the wiring is in one readable place rather than spread out.
 
@@ -197,3 +220,9 @@ text and can never be interpreted as markup.
 - The `<dialog>` element – https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog
 - `AbortSignal.timeout()` – https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal/timeout_static
 - BEM naming convention – https://getbem.com/naming/
+- SuperHi – https://www.superhi.com/ – the reference for the visual direction: the bold flat
+  palette, the oversized tight-set headings, the pill controls and the offset shadows
+- `prefers-reduced-motion` – https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion
+- `prefers-color-scheme` – https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme
+- SVG arcs and the `path` element – https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial/Paths
+- Deleting a Firebase user – https://firebase.google.com/docs/auth/web/manage-users#delete_a_user
