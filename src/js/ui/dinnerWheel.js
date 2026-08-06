@@ -34,15 +34,52 @@ const SEGMENT_COLOURS = [
   "#e1edff",
 ];
 
+/** The two colours a segment label can be drawn in. */
+const LABEL_DARK = "#111118";
+const LABEL_LIGHT = "#ffffff";
+
 /**
- * Text that reads clearly on a given segment colour. The light segments need
- * dark text to stay above the WCAG AA contrast minimum.
+ * The relative luminance of a hex colour, as defined by WCAG.
+ * @param {string} hex
+ * @returns {number}
+ */
+function relativeLuminance(hex) {
+  const channels = [1, 3, 5].map((offset) => {
+    const value = parseInt(hex.slice(offset, offset + 2), 16) / 255;
+    return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  });
+
+  return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+}
+
+/**
+ * The contrast ratio between two colours, from 1:1 to 21:1.
+ * @param {string} first
+ * @param {string} second
+ * @returns {number}
+ */
+function contrastRatio(first, second) {
+  const a = relativeLuminance(first);
+  const b = relativeLuminance(second);
+
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
+/**
+ * Text that reads clearly on a given segment colour.
+ *
+ * The choice is calculated rather than listed, so adding a colour to
+ * SEGMENT_COLOURS cannot leave a label below the WCAG AA minimum of 4.5:1 by
+ * accident. Only the blue is above the line with white text; every other colour
+ * in the set reads better with dark text.
+ *
  * @param {string} colour
  * @returns {string}
  */
 function labelColourFor(colour) {
-  const darkBackgrounds = ["#2727e6", "#ff4141", "#16ab59"];
-  return darkBackgrounds.includes(colour) ? "#ffffff" : "#111118";
+  return contrastRatio(LABEL_LIGHT, colour) > contrastRatio(LABEL_DARK, colour)
+    ? LABEL_LIGHT
+    : LABEL_DARK;
 }
 
 /**

@@ -7,6 +7,7 @@
  */
 
 import { DEFAULT_SORT, SORT_OPTIONS } from "../features/recipeFilters.js";
+import { categoryName } from "../i18n/categoryName.js";
 import { t } from "../i18n/i18n.js";
 import { createElement } from "../utils/dom.js";
 
@@ -47,6 +48,9 @@ export function createSearchControls({
 
   renderSortOptions();
 
+  /** The most recent category list, kept so it can be redrawn on a language change. */
+  let lastCategories = [];
+
   /** @returns {{category: string, sort: string}} */
   function readFilters() {
     return { category: categorySelect.value, sort: sortSelect.value };
@@ -67,12 +71,18 @@ export function createSearchControls({
      * @param {string[]} categories
      */
     setCategories(categories) {
+      lastCategories = categories;
       const previousValue = categorySelect.value;
 
       categorySelect.replaceChildren(
         createElement("option", { text: t("browse.allCategories"), attributes: { value: "" } }),
+        // The value stays the English name the recipes carry; only the label is
+        // translated.
         ...categories.map((category) =>
-          createElement("option", { text: category, attributes: { value: category } }),
+          createElement("option", {
+            text: categoryName(category),
+            attributes: { value: category },
+          }),
         ),
       );
 
@@ -92,12 +102,9 @@ export function createSearchControls({
      */
     refreshLabels() {
       renderSortOptions();
-
-      const allCategoriesOption = categorySelect.querySelector('option[value=""]');
-
-      if (allCategoriesOption) {
-        allCategoriesOption.textContent = t("browse.allCategories");
-      }
+      // Rebuilt rather than patched, so the translated category labels follow
+      // the language too.
+      this.setCategories(lastCategories);
     },
 
     /**

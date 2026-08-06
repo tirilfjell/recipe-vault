@@ -80,7 +80,26 @@ npm start          # development server on http://localhost:4004
 ```bash
 npm run build      # production build into dist/
 npm run preview    # serves the production build locally
+npm test           # runs the unit tests
 ```
+
+## Tests
+
+```bash
+npm test
+```
+
+58 tests, run by Node's own test runner, so the project needs no test dependency:
+
+- **`tests/recipeFilters.test.js`** – the filtering and sorting, including that they return new
+  lists rather than reordering the one they were given.
+- **`tests/validators.test.js`** – the form rules: which fields report a problem and when, and that
+  a short password is only rejected when an account is being created.
+- **`tests/i18n.test.js`** – that both languages hold exactly the same keys, with the same
+  placeholders and no empty strings. A key missing from Norwegian would otherwise show up as
+  English text in a Norwegian interface, which is easy to miss by eye.
+- **`tests/contrast.test.js`** – every text-and-background pairing in both themes, and every wheel
+  segment, calculated against the WCAG AA minimum of 4.5:1.
 
 Deploy the contents of `dist/` – that is the folder to point Netlify or Firebase Hosting at.
 
@@ -207,7 +226,12 @@ text and can never be interpreted as markup.
   to a local drawing with an `alt` text that says so.
 - All interactive elements are reachable by keyboard and have a clearly visible focus ring.
 - All colours are checked against their background for a contrast ratio above the WCAG AA minimum
-  of 4.5:1.
+  of 4.5:1. The check is a test rather than a judgement by eye, so it stays true: see
+  `tests/contrast.test.js`. Most pairings reach the stricter AAA level of 7:1.
+- Headings run in order without skipping a level, and each screen has exactly one `h1`.
+- Every button's accessible name contains its visible text, so voice control can act on what is
+  on screen.
+- Lighthouse reports 100 for accessibility, best practices and SEO.
 
 ## Sources
 

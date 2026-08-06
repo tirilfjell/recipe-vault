@@ -45,6 +45,7 @@ const en = {
   "validation.emailIncomplete": "Enter a complete email address, for example name@example.com.",
   "validation.passwordRequired": "Enter your password.",
   "validation.passwordShort": "The password must be at least 6 characters long.",
+  "validation.noteTooLong": "The note can be at most {max} characters.",
 
   // Authentication errors --------------------------------------------------
   "authError.wrongCredentials": "The email address or password is not correct.",
@@ -73,12 +74,33 @@ const en = {
   "browse.countMany": "{count} recipes",
   "browse.countFiltered": "{shown} of {total}",
 
+  // Recipe categories -----------------------------------------------------
+  // The API serves these in English and they are also the values the filter
+  // matches on, so only the label shown to the user is translated. The cuisines
+  // on the cards are not: TheMealDB lists around 190 of them and they are
+  // nationalities rather than a fixed vocabulary.
+  "category.Beef": "Beef",
+  "category.Breakfast": "Breakfast",
+  "category.Chicken": "Chicken",
+  "category.Dessert": "Dessert",
+  "category.Goat": "Goat",
+  "category.Lamb": "Lamb",
+  "category.Miscellaneous": "Miscellaneous",
+  "category.Pasta": "Pasta",
+  "category.Pork": "Pork",
+  "category.Seafood": "Seafood",
+  "category.Side": "Side",
+  "category.Starter": "Starter",
+  "category.Vegan": "Vegan",
+  "category.Vegetarian": "Vegetarian",
+
   // Recipe card and dialog -------------------------------------------------
   "recipe.view": "View recipe",
   "recipe.viewLabel": "View the recipe for {name}",
   "recipe.save": "Save",
   "recipe.saved": "Saved",
   "recipe.saveLabel": "Save {name} to your recipes",
+  "recipe.savedLabel": "Saved: {name}. Press to remove it from your recipes",
   "recipe.removeLabel": "Remove {name} from your saved recipes",
   "recipe.photograph": "Photograph of {name}",
   "recipe.noPhotograph": "No photograph available for {name}",
@@ -197,6 +219,7 @@ const nb = {
   "validation.emailIncomplete": "Skriv inn en fullstendig e-postadresse, for eksempel navn@eksempel.no.",
   "validation.passwordRequired": "Skriv inn passordet ditt.",
   "validation.passwordShort": "Passordet må være minst 6 tegn langt.",
+  "validation.noteTooLong": "Notatet kan være på høyst {max} tegn.",
 
   // Authentication errors --------------------------------------------------
   "authError.wrongCredentials": "E-postadressen eller passordet er ikke riktig.",
@@ -225,12 +248,29 @@ const nb = {
   "browse.countMany": "{count} oppskrifter",
   "browse.countFiltered": "{shown} av {total}",
 
+  // Recipe categories -----------------------------------------------------
+  "category.Beef": "Storfe",
+  "category.Breakfast": "Frokost",
+  "category.Chicken": "Kylling",
+  "category.Dessert": "Dessert",
+  "category.Goat": "Geit",
+  "category.Miscellaneous": "Diverse",
+  "category.Lamb": "Lam",
+  "category.Pasta": "Pasta",
+  "category.Pork": "Svin",
+  "category.Seafood": "Sjømat",
+  "category.Side": "Tilbehør",
+  "category.Starter": "Forrett",
+  "category.Vegan": "Vegansk",
+  "category.Vegetarian": "Vegetarisk",
+
   // Recipe card and dialog -------------------------------------------------
   "recipe.view": "Se oppskrift",
   "recipe.viewLabel": "Se oppskriften for {name}",
   "recipe.save": "Lagre",
   "recipe.saved": "Lagret",
   "recipe.saveLabel": "Lagre {name} i oppskriftene dine",
+  "recipe.savedLabel": "Lagret: {name}. Trykk for å fjerne den fra oppskriftene dine",
   "recipe.removeLabel": "Fjern {name} fra de lagrede oppskriftene dine",
   "recipe.photograph": "Fotografi av {name}",
   "recipe.noPhotograph": "Ingen fotografi tilgjengelig for {name}",

@@ -6,6 +6,7 @@
  * about the API or about Firestore.
  */
 
+import { categoryName } from "../i18n/categoryName.js";
 import { t } from "../i18n/i18n.js";
 import { createElement } from "../utils/dom.js";
 import placeholderImage from "../../assets/img/recipe-placeholder.svg";
@@ -75,7 +76,7 @@ export function createRecipeList({
     const meta = createElement("p", {
       className: "recipe-card__meta",
       children: [
-        createElement("span", { className: "badge", text: recipe.category }),
+        createElement("span", { className: "badge", text: categoryName(recipe.category) }),
         createElement("span", { className: "recipe-card__area", text: recipe.area }),
       ],
     });
@@ -98,9 +99,11 @@ export function createRecipeList({
         "data-toggle-favourite": recipe.id,
         "data-saved": String(isSaved),
         // The state is spelled out, because a colour change alone is not
-        // available to a screen reader.
+        // available to a screen reader. Both labels begin with the word shown on
+        // the button, because WCAG asks that the accessible name contain the
+        // visible text: someone using voice control says what they can see.
         "aria-label": isSaved
-          ? t("recipe.removeLabel", { name: recipe.name })
+          ? t("recipe.savedLabel", { name: recipe.name })
           : t("recipe.saveLabel", { name: recipe.name }),
       },
     });
@@ -120,7 +123,8 @@ export function createRecipeList({
             createElement("div", {
               className: "recipe-card__body",
               children: [
-                createElement("h3", { className: "recipe-card__title", text: recipe.name }),
+                // h2: the next level below the screen heading. h3 would skip a level.
+                createElement("h2", { className: "recipe-card__title", text: recipe.name }),
                 meta,
                 createElement("div", {
                   className: "recipe-card__actions",

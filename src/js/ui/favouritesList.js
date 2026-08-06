@@ -7,6 +7,7 @@
  */
 
 import { MAX_NOTE_LENGTH, validateNote } from "../utils/validators.js";
+import { categoryName } from "../i18n/categoryName.js";
 import { t } from "../i18n/i18n.js";
 import { createElement } from "../utils/dom.js";
 
@@ -113,11 +114,14 @@ export function createFavouritesList({
         createElement("div", {
           className: "favourite__header",
           children: [
-            createElement("h3", { className: "favourite__title", text: favourite.name }),
+            createElement("h2", { className: "favourite__title", text: favourite.name }),
             createElement("p", {
               className: "favourite__meta",
               children: [
-                createElement("span", { className: "badge", text: favourite.category ?? t("recipe.uncategorised") }),
+                createElement("span", {
+                  className: "badge",
+                  text: favourite.category ? categoryName(favourite.category) : t("recipe.uncategorised"),
+                }),
                 createElement("span", {
                   className: "recipe-card__area",
                   text: favourite.area ?? "",

@@ -6,6 +6,7 @@
  * the rest of the page is hidden from screen readers.
  */
 
+import { categoryName } from "../i18n/categoryName.js";
 import { t } from "../i18n/i18n.js";
 import { createElement } from "../utils/dom.js";
 
@@ -37,7 +38,7 @@ export function createRecipeDialog({ dialog, closeButton }) {
       createElement("p", {
         className: "recipe-detail__meta",
         children: [
-          createElement("span", { className: "badge", text: recipe.category }),
+          createElement("span", { className: "badge", text: categoryName(recipe.category) }),
           createElement("span", { className: "recipe-card__area", text: recipe.area }),
         ],
       }),
