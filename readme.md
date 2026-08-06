@@ -11,7 +11,9 @@ Firebase.
 
 - **GitHub repository:** https://github.com/tirilfjell/recipe-vault
 - **Live version (Firebase Hosting):** https://recipe-valut.web.app
-- **Figma prototype:** `prototype.fig` in this folder
+- **Prototype:** `prototype.pen` in this folder, with PNG exports of every screen in
+  `prototype-exports/`. A Figma version is to be exported as `prototype.fig`; the Pencil file and
+  the exports are the reference for it.
 
 ## Features
 
@@ -119,7 +121,8 @@ Final_project/
 ├── .env.example            Template for the local .env file
 ├── package.json
 ├── readme.md
-├── prototype.fig           Figma prototype
+├── prototype.pen           Prototype: 6 screens plus the design system
+├── prototype-exports/      PNG export of each prototype screen
 └── src/
     ├── index.html          Page template used by HtmlWebpackPlugin
     ├── index.js            Entry point: holds the state and wires the modules
