@@ -290,8 +290,16 @@
         <nav class="site-footer__nav" data-i18n-aria-label="footer.label" aria-label="Footer">
           <h2 class="site-footer__heading" data-i18n="footer.recipesHeading">Recipes</h2>
           <ul class="site-footer__list">
-            <li><a class="site-footer__link" href="#browse-title">Browse recipes</a></li>
-            <li><a class="site-footer__link" href="#saved-title">Saved recipes</a></li>
+            <!-- These point at the screens, which are the same hashes the header
+                 navigation uses. -->
+            <li>
+              <a class="site-footer__link" href="#browse" data-i18n="browse.title">
+                Browse recipes
+              </a>
+            </li>
+            <li>
+              <a class="site-footer__link" href="#saved" data-i18n="saved.title">Saved recipes</a>
+            </li>
           </ul>
         </nav>
 

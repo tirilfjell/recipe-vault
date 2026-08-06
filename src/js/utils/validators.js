@@ -6,6 +6,8 @@
  * shape: a message per field.
  */
 
+import { t } from "../i18n/i18n.js";
+
 /** Firebase requires at least six characters. */
 const MIN_PASSWORD_LENGTH = 6;
 
@@ -32,15 +34,15 @@ export function validateCredentials({ email, password }, mode) {
   const trimmedEmail = email.trim();
 
   if (trimmedEmail === "") {
-    errors.email = "Enter your email address.";
+    errors.email = t("validation.emailRequired");
   } else if (!EMAIL_PATTERN.test(trimmedEmail)) {
-    errors.email = "Enter a complete email address, for example name@example.com.";
+    errors.email = t("validation.emailIncomplete");
   }
 
   if (password === "") {
-    errors.password = "Enter your password.";
+    errors.password = t("validation.passwordRequired");
   } else if (mode === "register" && password.length < MIN_PASSWORD_LENGTH) {
-    errors.password = `Choose a password of at least ${MIN_PASSWORD_LENGTH} characters.`;
+    errors.password = t("validation.passwordShort");
   }
 
   return errors;
@@ -53,7 +55,7 @@ export function validateCredentials({ email, password }, mode) {
  */
 export function validateNote(note) {
   if (note.length > MAX_NOTE_LENGTH) {
-    return `The note can be at most ${MAX_NOTE_LENGTH} characters.`;
+    return t("validation.noteTooLong", { max: MAX_NOTE_LENGTH });
   }
 
   return "";

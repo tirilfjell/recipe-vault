@@ -19,6 +19,10 @@ export const THEME_DARK = "dark";
  * @returns {string}
  */
 function systemTheme() {
+  if (typeof window === "undefined") {
+    return THEME_LIGHT;
+  }
+
   return window.matchMedia?.("(prefers-color-scheme: dark)").matches ? THEME_DARK : THEME_LIGHT;
 }
 
@@ -28,7 +32,7 @@ function systemTheme() {
  */
 export function getTheme() {
   try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
+    const stored = globalThis.localStorage?.getItem(STORAGE_KEY);
 
     if (stored === THEME_LIGHT || stored === THEME_DARK) {
       return stored;
@@ -47,10 +51,12 @@ export function getTheme() {
 export function setTheme(theme) {
   const next = theme === THEME_DARK ? THEME_DARK : THEME_LIGHT;
 
-  document.documentElement.dataset.theme = next;
+  if (typeof document !== "undefined") {
+    document.documentElement.dataset.theme = next;
+  }
 
   try {
-    window.localStorage.setItem(STORAGE_KEY, next);
+    globalThis.localStorage?.setItem(STORAGE_KEY, next);
   } catch {
     // The theme still applies for this visit even if it cannot be stored.
   }
@@ -58,5 +64,7 @@ export function setTheme(theme) {
 
 /** Applies the starting theme, before the first paint of the interface. */
 export function applyInitialTheme() {
-  document.documentElement.dataset.theme = getTheme();
+  if (typeof document !== "undefined") {
+    document.documentElement.dataset.theme = getTheme();
+  }
 }

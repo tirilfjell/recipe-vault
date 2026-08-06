@@ -23,7 +23,7 @@ const listeners = new Set();
  */
 function readInitialLanguage() {
   try {
-    const stored = window.localStorage.getItem(STORAGE_KEY);
+    const stored = globalThis.localStorage?.getItem(STORAGE_KEY);
 
     if (stored && stored in translations) {
       return stored;
@@ -33,8 +33,9 @@ function readInitialLanguage() {
   }
 
   // navigator.language looks like "nb-NO", so only the part before the dash is
-  // compared.
-  const browserLanguage = (navigator.language || "").split("-")[0];
+  // compared. It is absent outside a browser, such as when the tests run.
+  const browserLanguage =
+    typeof navigator === "undefined" ? "" : (navigator.language || "").split("-")[0];
 
   return browserLanguage in translations ? browserLanguage : DEFAULT_LANGUAGE;
 }
@@ -92,14 +93,17 @@ export function setLanguage(language) {
   currentLanguage = language;
 
   try {
-    window.localStorage.setItem(STORAGE_KEY, language);
+    globalThis.localStorage?.setItem(STORAGE_KEY, language);
   } catch {
     // Not being able to remember the choice is not worth interrupting the user.
   }
 
   // Screen readers and search engines both use this attribute, so it has to
-  // follow the interface language.
-  document.documentElement.lang = language;
+  // follow the interface language. The guard is there because the translations
+  // are also used by the tests, which run without a document.
+  if (typeof document !== "undefined") {
+    document.documentElement.lang = language;
+  }
 
   listeners.forEach((listener) => listener());
 }
@@ -114,5 +118,7 @@ export function onLanguageChange(listener) {
 
 /** Puts the starting language on the document element. */
 export function applyInitialLanguage() {
-  document.documentElement.lang = currentLanguage;
+  if (typeof document !== "undefined") {
+    document.documentElement.lang = currentLanguage;
+  }
 }
