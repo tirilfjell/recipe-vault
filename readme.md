@@ -10,7 +10,7 @@ Firebase.
 ## Links
 
 - **GitHub repository:** https://github.com/tirilfjell/recipe-vault
-- **Live version (Netlify or Firebase Hosting):** _add the URL here after deploying_
+- **Live version (Firebase Hosting):** https://recipe-valut.web.app
 - **Figma prototype:** `prototype.fig` in this folder
 
 ## Features
@@ -104,6 +104,12 @@ npm test
 Deploy the contents of `dist/` – that is the folder to point Netlify or Firebase Hosting at.
 
 ## Project structure
+
+The assignment brief lists `assets/`, `css/`, `js/` and `index.html` directly inside
+`Final_project/`. They are inside `src/` here instead, because the project is bundled with
+Webpack: `src/` is the source Webpack reads, and `dist/` is the folder it writes, which is what
+gets deployed. Keeping the sources in one directory is what lets the build, the module structure
+and the stylesheet imports work at all. The same folders are all present, one level down.
 
 ```
 Final_project/
