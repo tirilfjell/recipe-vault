@@ -43,6 +43,9 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  /* Never shrink: the pill is sized by its text, and letting flex compress it
+     clips the name behind the navigation. */
+  flex: 0 0 auto;
   margin: 0 auto 0 0;
   padding: var(--space-xs) var(--space-md) var(--space-xs) var(--space-xs);
   background-color: var(--color-surface);
@@ -70,10 +73,12 @@
 
 /* Inline navigation ------------------------------------------------------ */
 
-/* The links are their own pill on the right. Below 48rem they are replaced by
+/* The links are their own pill on the right. Below 56rem they are replaced by
    the menu button, so they never wrap. */
 .screen-nav {
   display: none;
+  flex: 0 1 auto;
+  min-width: 0;
   padding: var(--space-xs);
   background-color: var(--color-surface);
   border: var(--border-ink);
@@ -85,7 +90,8 @@
   display: none;
 }
 
-@media (min-width: 48rem) {
+/* Must match WIDE_FROM in headerMenu.js. */
+@media (min-width: 56rem) {
   .screen-nav:not([hidden]) {
     display: block;
   }
@@ -129,7 +135,7 @@
 /* Menu button ------------------------------------------------------------ */
 
 /* Three stacked dots, the same pill treatment as everything else. Only present
-   below 48rem, and only once there is something to open. */
+   below 56rem, and only once there is something to open. */
 .menu-toggle {
   display: grid;
   place-items: center;
@@ -150,7 +156,7 @@
   display: none;
 }
 
-@media (min-width: 48rem) {
+@media (min-width: 56rem) {
   .menu-toggle {
     display: none;
   }
@@ -228,7 +234,7 @@
   transform: translateY(0) scale(1);
 }
 
-@media (min-width: 48rem) {
+@media (min-width: 56rem) {
   .site-menu {
     display: none;
   }
@@ -331,12 +337,6 @@
 
 .screen-nav[hidden] {
   display: none;
-}
-
-.screen-nav {
-  /* Takes the full row once the header wraps, so the links are not squeezed
-     against the brand. */
-  flex: 1 1 100%;
 }
 
 .screen-nav__links {

@@ -13,8 +13,15 @@
 
 import { t } from "../i18n/i18n.js";
 
-/** The width from which the links fit beside the brand and the button goes away. */
-const WIDE_FROM = "(min-width: 48rem)";
+/**
+ * The width from which the links fit beside the brand and the button goes away.
+ *
+ * 56rem rather than 48rem: the Norwegian labels are considerably longer than the
+ * English ones ("Lagrede oppskrifter" against "Saved recipes"), and at 48rem they
+ * left only a few pixels of slack, so the brand was clipped behind the links.
+ * This must match the breakpoint in layout.css.
+ */
+const WIDE_FROM = "(min-width: 56rem)";
 
 /** How long the panel takes to open, matching the CSS transition. */
 const PANEL_DURATION = 300;
