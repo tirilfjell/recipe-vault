@@ -5,8 +5,6 @@ list and method, and keep the ones they like in their own account. The front end
 plain HTML, CSS and JavaScript, bundled with Webpack. Accounts and saved recipes are handled by
 Firebase.
 
-**Course:** FFU1200 – Production of Frontend Development
-
 ## Links
 
 - **GitHub repository:** https://github.com/tirilfjell/recipe-vault
