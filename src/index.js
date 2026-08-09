@@ -9,6 +9,8 @@
 
 import "./css/main.css";
 
+import logoUrl from "./assets/img/cookbook.svg";
+
 import { ApiError } from "./js/api/ApiError.js";
 import { fetchCategories, fetchRecipeById, searchRecipes } from "./js/api/mealApi.js";
 import {
@@ -89,6 +91,7 @@ function main() {
     header: requireElement(".site-header"),
     menuToggle: requireElement("[data-menu-toggle]"),
     siteMenu: requireElement("[data-site-menu]"),
+    menuLinks: requireElement("[data-menu-links]"),
     screenNav: requireElement("[data-screen-nav]"),
     screenNavWrapper: requireElement("[data-screen-nav-wrapper]"),
     settingsPanel: requireElement("[data-settings-panel]"),
@@ -96,6 +99,12 @@ function main() {
     screenSaved: requireElement('[data-screen="saved"]'),
     screenSettings: requireElement('[data-screen="settings"]'),
   };
+
+  // The mark is imported rather than written into the markup, because a src in
+  // index.html is not processed by Webpack and the file would never be emitted.
+  document.querySelectorAll("[data-logo]").forEach((image) => {
+    image.src = logoUrl;
+  });
 
   // The language and theme are applied before anything is drawn, so the first
   // paint is already correct rather than flashing English or the wrong theme.
@@ -365,10 +374,12 @@ function main() {
     header: elements.header,
     toggle: elements.menuToggle,
     menu: elements.siteMenu,
+    nav: elements.screenNavWrapper,
   });
 
   const screenNav = createScreenNav({
     navElement: elements.screenNav,
+    menuElement: elements.menuLinks,
     screens: {
       [SCREEN_BROWSE]: elements.screenBrowse,
       [SCREEN_SAVED]: elements.screenSaved,
@@ -434,8 +445,7 @@ function main() {
       elements.authView.hidden = true;
       elements.appView.hidden = false;
       elements.accountBar.hidden = false;
-      elements.screenNavWrapper.hidden = false;
-      // There is now something for the menu button to open.
+      // Reveals the inline navigation and the menu button together.
       headerMenu.setHasContent(true);
       elements.accountEmail.textContent = user.email ?? "";
 
@@ -454,9 +464,8 @@ function main() {
 
     elements.appView.hidden = true;
     elements.accountBar.hidden = true;
-    elements.screenNavWrapper.hidden = true;
-    // The sign-in screen has no navigation and no account controls, so the menu
-    // button has nothing to show and is taken away with them.
+    // The sign-in screen has no navigation and no account controls, so both the
+    // inline links and the menu button are taken away with them.
     headerMenu.setHasContent(false);
     elements.authView.hidden = false;
     authFeedback.hide();
