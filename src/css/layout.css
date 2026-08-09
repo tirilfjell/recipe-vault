@@ -43,6 +43,8 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
+  color: var(--color-text);
+  text-decoration: none;
   /* Never shrink: the pill is sized by its text, and letting flex compress it
      clips the name behind the navigation. */
   flex: 0 0 auto;
@@ -67,8 +69,19 @@
   transition: transform var(--duration-mid) var(--ease-out);
 }
 
-.site-header__brand:hover .site-header__mark {
+.site-header__brand:hover {
+  color: var(--color-text);
+}
+
+/* The book tips as the whole pill is hovered, which is the cue that it is a
+   link back to the recipes. */
+.site-header__brand:hover .site-header__mark,
+.site-header__brand:focus-visible .site-header__mark {
   transform: rotate(-8deg) scale(1.08);
+}
+
+.site-header__brand:active {
+  transform: scale(0.98);
 }
 
 /* Inline navigation ------------------------------------------------------ */

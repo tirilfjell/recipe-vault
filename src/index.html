@@ -17,10 +17,12 @@
          rather than one bar across the page, so nothing has to wrap and the
          header stays one row tall at every width. -->
     <header class="site-header">
-      <p class="site-header__brand">
+      <!-- A real link rather than a click handler, so it behaves like any other
+           link: middle click, open in a new tab and the status bar all work. -->
+      <a class="site-header__brand" href="#browse" data-brand-link>
         <img class="site-header__mark" data-logo alt="" width="40" height="40" />
         <span data-i18n="app.name">Recipe Vault</span>
-      </p>
+      </a>
 
       <!-- The navigation links sit inline on a wide screen and move into the
            menu panel below the breakpoint. -->
