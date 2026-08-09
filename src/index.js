@@ -34,6 +34,7 @@ import { createAuthPanel } from "./js/ui/authPanel.js";
 import { createDinnerWheel } from "./js/ui/dinnerWheel.js";
 import { createFavouritesList } from "./js/ui/favouritesList.js";
 import { createFeedback } from "./js/ui/feedback.js";
+import { createHeaderMenu } from "./js/ui/headerMenu.js";
 import { createRecipeDialog } from "./js/ui/recipeDialog.js";
 import { createRecipeList } from "./js/ui/recipeList.js";
 import {
@@ -85,6 +86,9 @@ function main() {
     dinnerWheel: requireElement("[data-dinner-wheel]"),
     wheelStatus: requireElement("[data-wheel-status]"),
     spinButton: requireElement("[data-spin-wheel]"),
+    header: requireElement(".site-header"),
+    menuToggle: requireElement("[data-menu-toggle]"),
+    siteMenu: requireElement("[data-site-menu]"),
     screenNav: requireElement("[data-screen-nav]"),
     screenNavWrapper: requireElement("[data-screen-nav-wrapper]"),
     settingsPanel: requireElement("[data-settings-panel]"),
@@ -357,6 +361,12 @@ function main() {
     favouritesList.clear();
   }
 
+  const headerMenu = createHeaderMenu({
+    header: elements.header,
+    toggle: elements.menuToggle,
+    menu: elements.siteMenu,
+  });
+
   const screenNav = createScreenNav({
     navElement: elements.screenNav,
     screens: {
@@ -398,6 +408,7 @@ function main() {
   // the modules that own it.
   onLanguageChange(() => {
     applyTranslations();
+    headerMenu.refreshLabels();
     screenNav.render();
     settingsPanel.render();
     searchControls.refreshLabels();

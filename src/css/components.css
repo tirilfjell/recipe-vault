@@ -53,8 +53,11 @@
   color: var(--color-text);
 }
 
+/* The label has to change with the background: these hovers turn yellow, and in
+   the dark theme the button's own text is near-white, which is unreadable on it. */
 .button--secondary:hover:not(:disabled) {
   background-color: var(--color-accent-yellow);
+  color: #111118;
 }
 
 .button--ghost {
@@ -64,6 +67,7 @@
 
 .button--ghost:hover:not(:disabled) {
   background-color: var(--color-accent-yellow);
+  color: #111118;
 }
 
 /* A saved recipe keeps its own colour, and the button text says "Saved" as

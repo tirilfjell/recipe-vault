@@ -140,6 +140,13 @@ const segmentColours = [
       assertReadable("badge text on yellow", "#111118", theme.accentYellow);
     });
 
+    it("the yellow hover state keeps dark text in both themes", () => {
+      // Save and View recipe turn yellow on hover. Their resting label is the
+      // theme's text colour, which in the dark theme is near-white, so the label
+      // has to switch to the dark ink at the same time as the background.
+      assertReadable("hovered button label on yellow", "#111118", theme.accentYellow);
+    });
+
     it("the yellow pills keep dark text in both themes", () => {
       // The badge, the count pill and the Saved button stay yellow whichever
       // theme is active, so they must not take the theme's text colour: in the
