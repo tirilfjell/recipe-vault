@@ -139,6 +139,23 @@ const segmentColours = [
     it("the badge is readable", () => {
       assertReadable("badge text on yellow", "#111118", theme.accentYellow);
     });
+
+    it("the yellow pills keep dark text in both themes", () => {
+      // The badge, the count pill and the Saved button stay yellow whichever
+      // theme is active, so they must not take the theme's text colour: in the
+      // dark theme that is #f4f4f8, which is unreadable on yellow. This is what
+      // made "3 lagret" invisible on a phone in dark mode.
+      const ratio = contrastRatio(theme.text, theme.accentYellow);
+
+      if (themeName === "dark") {
+        assert.ok(
+          ratio < AA_NORMAL,
+          "the dark theme's text colour is expected to fail on yellow, which is why the yellow pills hard-code the dark ink",
+        );
+      }
+
+      assertReadable("the ink actually used on the yellow pills", "#111118", theme.accentYellow);
+    });
   });
 });
 

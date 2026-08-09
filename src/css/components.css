@@ -70,7 +70,7 @@
    well, so the state does not rely on colour alone. */
 .button--ghost-active {
   background-color: var(--color-accent-yellow);
-  color: var(--color-accent-text);
+  color: #111118;
 }
 
 .button--danger {
@@ -98,7 +98,9 @@
   display: inline-block;
   padding: 0.125rem var(--space-sm);
   background-color: var(--color-accent-surface);
-  color: var(--color-accent-text);
+  /* Fixed dark ink rather than a theme token: the badge stays yellow in both
+     themes, so the dark theme's light text would be unreadable on it. */
+  color: #111118;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
   font-size: 0.8125rem;
@@ -577,4 +579,12 @@
 
 .feedback[hidden] {
   display: none;
+}
+
+/* The copy inside the sign-in card, where the message sits between the hint and
+   the fields rather than at the top of the page. */
+.auth-form__feedback {
+  margin-bottom: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-small);
 }
