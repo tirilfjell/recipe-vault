@@ -25,19 +25,30 @@
   padding: var(--space-md) var(--space-md) 0;
 }
 
+/* A pill only works while the bar is a single line. Below 60rem the contents
+   have to stack, so the shape becomes a rounded rectangle instead: a pill around
+   several wrapped rows leaves huge empty curves at the ends and pushes the
+   content out of the shape. */
 .site-header__inner {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-md);
+  gap: var(--space-sm) var(--space-md);
   max-width: var(--layout-max-width);
   margin: 0 auto;
-  padding: var(--space-sm) var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
   background-color: var(--color-surface);
   border: var(--border-ink);
-  border-radius: var(--radius-pill);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-panel);
+}
+
+@media (min-width: 60rem) {
+  .site-header__inner {
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-pill);
+  }
 }
 
 .site-header__brand {
@@ -73,16 +84,33 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-sm) var(--space-md);
+  /* Full row on a phone as well, so the address and the button sit on one line
+     together rather than overlapping the navigation. */
+  flex: 1 1 100%;
+}
+
+@media (min-width: 60rem) {
+  .account-bar {
+    flex: 0 1 auto;
+    justify-content: flex-end;
+  }
 }
 
 .account-bar[hidden] {
   display: none;
 }
 
+/* The address is the least important thing in the bar, so it is what gives way
+   when there is no room, rather than pushing the button off the edge. */
 .account-bar__email {
+  min-width: 0;
+  overflow: hidden;
   color: var(--color-text-muted);
   font-size: var(--font-size-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* App view --------------------------------------------------------------- */
@@ -117,10 +145,22 @@
   display: none;
 }
 
+.screen-nav {
+  /* Takes the full row once the header wraps, so the links are not squeezed
+     against the brand. */
+  flex: 1 1 100%;
+}
+
 .screen-nav__links {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-xs);
+}
+
+@media (min-width: 60rem) {
+  .screen-nav {
+    flex: 0 1 auto;
+  }
 }
 
 .screen-nav__link {
@@ -185,7 +225,9 @@
   margin-bottom: var(--space-md);
   padding: 0.125rem var(--space-sm);
   background-color: var(--color-accent-yellow);
-  color: var(--color-text);
+  /* Always the dark ink, never the theme's text colour: the pill stays yellow in
+     both themes, so the light text of the dark theme would be unreadable on it. */
+  color: #111118;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
   font-size: var(--font-size-small);

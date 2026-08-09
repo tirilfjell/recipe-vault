@@ -70,6 +70,7 @@ function main() {
     accountEmail: requireElement("[data-account-email]"),
     signOutButton: requireElement("[data-sign-out]"),
     feedback: requireElement("[data-feedback]"),
+    authFeedback: requireElement("[data-auth-feedback]"),
     searchForm: requireElement("[data-search-form]"),
     categorySelect: requireElement("[data-category-filter]"),
     sortSelect: requireElement("[data-sort-order]"),
@@ -99,6 +100,10 @@ function main() {
   applyTranslations();
 
   const feedback = createFeedback(elements.feedback);
+
+  // Sign-in problems are reported on the card itself rather than at the top of
+  // the page, where on a phone they sit above the fold and are easy to miss.
+  const authFeedback = createFeedback(elements.authFeedback);
 
   // Without a Firebase project there is nothing to sign in to. The app says so
   // instead of failing silently, and the form is disabled.
@@ -152,6 +157,7 @@ function main() {
     form: elements.authForm,
     onSubmit: async ({ mode, email, password }) => {
       feedback.hide();
+      authFeedback.hide();
 
       try {
         // Both calls resolve to a user, and the auth listener below takes it
@@ -163,7 +169,7 @@ function main() {
           await signIn(email, password);
         }
       } catch (error) {
-        feedback.showError(error.message);
+        authFeedback.showError(error.message);
       }
     },
   });
@@ -437,6 +443,7 @@ function main() {
     elements.accountBar.hidden = true;
     elements.screenNavWrapper.hidden = true;
     elements.authView.hidden = false;
+    authFeedback.hide();
     authPanel.reset();
   });
 }

@@ -146,6 +146,13 @@ export function createDinnerWheel({ container, statusElement, spinButton, onPick
 
   let isSpinning = false;
 
+  /**
+   * A recipe list that arrived while the wheel was turning. It is applied once
+   * the spin has finished, so the wheel is never redrawn mid-animation.
+   * @type {object[]|null}
+   */
+  let pendingRecipes = null;
+
   const wheelGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
   wheelGroup.setAttribute("class", "dinner-wheel__group");
 
@@ -239,7 +246,35 @@ export function createDinnerWheel({ container, statusElement, spinButton, onPick
       container.classList.add("dinner-wheel--celebrating");
       statusElement.textContent = t("wheel.result", { name: winner.name });
       onPick(winner.id);
+
+      // Anything that arrived mid-spin is applied now. The result message above
+      // is left in place: it is the outcome the user just watched.
+      if (pendingRecipes) {
+        const recipes = pendingRecipes;
+        pendingRecipes = null;
+        const message = statusElement.textContent;
+        applyRecipes(recipes);
+        statusElement.textContent = message;
+      }
     }, SPIN_DURATION);
+  }
+
+  /**
+   * Puts a list of recipes on the wheel and redraws it.
+   *
+   * A random sample is taken so the wheel is not always the first eight results,
+   * which would make it feel fixed.
+   *
+   * @param {object[]} recipes
+   */
+  function applyRecipes(recipes) {
+    segments = [...recipes].sort(() => Math.random() - 0.5).slice(0, SEGMENT_COUNT);
+
+    draw();
+
+    const hasRecipes = segments.length > 0;
+    spinButton.disabled = !hasRecipes || isSpinning;
+    statusElement.textContent = hasRecipes ? t("wheel.idle") : t("wheel.empty");
   }
 
   spinButton.addEventListener("click", spin);
@@ -247,22 +282,20 @@ export function createDinnerWheel({ container, statusElement, spinButton, onPick
   return {
     /**
      * Puts a fresh set of recipes on the wheel.
-     *
-     * A random sample is taken so the wheel is not always the first eight
-     * results, which would make it feel fixed.
-     *
      * @param {object[]} recipes
      */
     setRecipes(recipes) {
-      segments = [...recipes].sort(() => Math.random() - 0.5).slice(0, SEGMENT_COUNT);
+      // Redrawing while the wheel is turning would replace the segments from
+      // underneath the animation and leave it mid-spin with labels but no
+      // colours. The new list is held back and applied once the spin has
+      // finished instead. Saving a recipe re-renders through the Firestore
+      // listener, which is exactly when this happens.
+      if (isSpinning) {
+        pendingRecipes = recipes;
+        return;
+      }
 
-      draw();
-
-      const hasRecipes = segments.length > 0;
-      spinButton.disabled = !hasRecipes || isSpinning;
-      statusElement.textContent = hasRecipes
-        ? t("wheel.idle")
-        : t("wheel.empty");
+      applyRecipes(recipes);
     },
   };
 }

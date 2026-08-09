@@ -98,6 +98,17 @@
 
             <p class="auth-form__hint" data-auth-hint></p>
 
+            <!-- Sign-in errors are shown here, directly above the fields they
+                 refer to, rather than at the top of the page where they are off
+                 screen on a phone. -->
+            <div
+              class="feedback feedback--error auth-form__feedback"
+              role="status"
+              aria-live="polite"
+              data-auth-feedback
+              hidden
+            ></div>
+
             <div class="auth-form__field">
               <label class="auth-form__label" for="email" data-i18n="auth.email">Email address</label>
               <input
