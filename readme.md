@@ -9,8 +9,7 @@ Firebase.
 
 - **GitHub repository:** https://github.com/tirilfjell/recipe-vault
 - **Live version (Firebase Hosting):** https://recipe-valut.web.app
-- **Figma prototype:** `RecipeVaultPrototype.fig` in this folder. `prototype-exports/` holds a PNG
-  of each screen, for looking at without opening Figma.
+- **Figma prototype:** `RecipeVaultPrototype.fig` in this folder.
 
 ## Features
 
@@ -129,7 +128,6 @@ Final_project/
 ├── package.json
 ├── readme.md
 ├── RecipeVaultPrototype.fig  Figma prototype
-├── prototype-exports/      PNG of each prototype screen
 └── src/
     ├── index.html          Page template used by HtmlWebpackPlugin
     ├── index.js            Entry point: holds the state and wires the modules
