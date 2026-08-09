@@ -293,21 +293,93 @@
 
 /* Saved recipe entry ----------------------------------------------------- */
 
+/* The same card as in the browser, with the note and the remove button added, so
+   a saved recipe is recognisably the thing that was saved. */
 .favourite {
-  display: grid;
-  gap: var(--space-sm);
-  padding: var(--space-md);
-  background-color: var(--color-surface-muted);
-  border: var(--border-ink);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--space-sm);
+  background-color: var(--color-surface);
+  border: 2px solid var(--card-border, var(--color-border));
   border-radius: var(--radius-lg);
+  box-shadow: 0.375rem 0.375rem 0 var(--card-shadow, var(--color-shadow));
   /* Each entry pops in when the Firestore listener adds it, which makes the
      save feel like it landed somewhere. */
   animation: pop-in var(--duration-mid) var(--ease-out) both;
+  transition:
+    transform var(--duration-mid) var(--ease-out),
+    box-shadow var(--duration-mid) var(--ease-out);
+}
+
+.favourite:hover {
+  transform: translate(-0.25rem, -0.25rem);
+  box-shadow: 0.75rem 0.75rem 0 var(--card-shadow, var(--color-shadow));
+}
+
+.favourite:hover .recipe-card__image {
+  transform: scale(1.06);
+}
+
+/* The saved list cycles the same border and shadow pairings as the browser. */
+.favourites > :nth-child(5n + 1) .favourite {
+  --card-border: var(--color-text);
+  --card-shadow: var(--color-accent-pink);
+}
+
+.favourites > :nth-child(5n + 2) .favourite {
+  --card-border: #2727e6;
+  --card-shadow: var(--color-accent-yellow);
+}
+
+.favourites > :nth-child(5n + 3) .favourite {
+  --card-border: #16ab59;
+  --card-shadow: var(--color-accent-sky);
+}
+
+.favourites > :nth-child(5n + 4) .favourite {
+  --card-border: #ff4141;
+  --card-shadow: var(--color-accent-yellow);
+}
+
+.favourites > :nth-child(5n + 5) .favourite {
+  --card-border: var(--color-text);
+  --card-shadow: var(--color-accent-sky);
+}
+
+[data-theme="dark"] .favourites > :nth-child(5n + 2) .favourite {
+  --card-border: #8f8fff;
+}
+
+[data-theme="dark"] .favourites > :nth-child(5n + 3) .favourite {
+  --card-border: #4ade80;
+}
+
+.favourite__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+}
+
+/* The buttons sit at the foot of the card, so entries with a longer name still
+   line their actions up with each other. */
+.favourite__actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: auto;
+}
+
+.favourite__actions .button {
+  flex: 1 1 0;
+  padding-inline: var(--space-sm);
+  white-space: nowrap;
 }
 
 .favourite__title {
-  margin-bottom: var(--space-xs);
-  font-size: 1rem;
+  margin-bottom: 0;
+  font-size: 1.0625rem;
 }
 
 .favourite__meta {
@@ -321,6 +393,7 @@
 .favourite__note-form {
   display: grid;
   gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
 }
 
 .favourite__note-label {
@@ -359,12 +432,6 @@
 
 .favourite__note-error:empty {
   display: none;
-}
-
-/* Grid items stretch by default, which would make the button as wide as the
-   whole entry. */
-.favourite__remove {
-  justify-self: start;
 }
 
 /* Recipe dialog ---------------------------------------------------------- */
