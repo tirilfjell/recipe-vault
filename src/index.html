@@ -20,22 +20,46 @@
           <span data-i18n="app.name">Recipe Vault</span>
         </p>
 
-        <!-- The screen navigation. Only shown once somebody is signed in, since
-             every screen behind it needs an account. -->
-        <nav class="screen-nav" data-screen-nav-wrapper aria-label="Recipe Vault" hidden>
-          <div class="screen-nav__links" data-screen-nav></div>
-        </nav>
+        <!-- Opens the navigation once the header has collapsed on scroll. It is
+             only reachable on a small screen, where the collapsed header hides
+             the links; on a desktop the links are always visible and this button
+             is hidden from everyone, including assistive technology. -->
+        <button
+          class="menu-toggle"
+          type="button"
+          data-menu-toggle
+          aria-expanded="false"
+          aria-controls="site-menu"
+          data-i18n-aria-label="app.openMenu"
+          aria-label="Open the menu"
+          hidden
+        >
+          <span class="menu-toggle__bars" aria-hidden="true">
+            <span class="menu-toggle__bar"></span>
+            <span class="menu-toggle__bar"></span>
+            <span class="menu-toggle__bar"></span>
+          </span>
+        </button>
 
-        <div class="account-bar" data-account-bar hidden>
-          <span class="account-bar__email" data-account-email></span>
-          <button
-            class="button button--ghost button--small"
-            type="button"
-            data-sign-out
-            data-i18n="app.signOut"
-          >
-            Sign out
-          </button>
+        <!-- The screen navigation and the account controls share one collapsible
+             region, so the burger reveals everything at once rather than leaving
+             the sign-out button stranded. -->
+        <div class="site-menu" id="site-menu" data-site-menu>
+          <nav class="screen-nav" data-screen-nav-wrapper aria-label="Recipe Vault" hidden>
+            <div class="screen-nav__links" data-screen-nav></div>
+          </nav>
+
+          <div class="account-bar" data-account-bar hidden>
+            <span class="account-bar__email" data-account-email></span>
+            <button
+              class="button button--ghost button--small"
+              type="button"
+              data-sign-out
+              data-i18n="app.signOut"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
       </div>
     </header>

@@ -18,6 +18,8 @@ const en = {
   "app.skipLink": "Skip to main content",
   "app.signOut": "Sign out",
   "app.settings": "Settings",
+  "app.openMenu": "Open the menu",
+  "app.closeMenu": "Close the menu",
 
   // Sign-in view -----------------------------------------------------------
   "auth.title": "Your recipes, in one place",
@@ -194,6 +196,8 @@ const nb = {
   "app.skipLink": "Gå til hovedinnholdet",
   "app.signOut": "Logg ut",
   "app.settings": "Innstillinger",
+  "app.openMenu": "Åpne menyen",
+  "app.closeMenu": "Lukk menyen",
 
   // Sign-in view -----------------------------------------------------------
   "auth.title": "Oppskriftene dine, på ett sted",
