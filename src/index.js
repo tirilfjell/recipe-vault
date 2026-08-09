@@ -139,6 +139,9 @@ function main() {
     countElement: elements.favouritesCount,
     onSaveNote: (recipeId, note) => saveNote(recipeId, note),
     onRemove: (recipeId, name) => removeSavedRecipe(recipeId, name),
+    // The same dialog the recipe cards open, so a saved recipe shows its full
+    // method and ingredients too.
+    onOpenRecipe: (recipeId) => openRecipe(recipeId),
   });
 
   const recipeDialog = createRecipeDialog({

@@ -1,15 +1,20 @@
 /**
  * The list of saved recipes.
  *
- * Each entry has a note that can be edited, and a button that removes it. The
- * note is a small form of its own, so it is validated in the same way as the
- * sign-in form before it is written to the database.
+ * An entry is the same card as in the recipe browser, with its photograph and a
+ * button that opens the full recipe, and adds a note that can be edited and a
+ * button that removes it. The note is a small form of its own, so it is validated
+ * in the same way as the sign-in form before it is written to the database.
+ *
+ * Everything shown here comes from the fields stored alongside the recipe in
+ * Firestore, so an entry can be drawn without asking the API for it again.
  */
 
 import { MAX_NOTE_LENGTH, validateNote } from "../utils/validators.js";
 import { categoryName } from "../i18n/categoryName.js";
 import { t } from "../i18n/i18n.js";
 import { createElement } from "../utils/dom.js";
+import placeholderImage from "../../assets/img/recipe-placeholder.svg";
 
 /**
  * @param {{
@@ -17,7 +22,8 @@ import { createElement } from "../utils/dom.js";
  *   statusElement: HTMLElement,
  *   countElement: HTMLElement,
  *   onSaveNote: (recipeId: string, note: string) => void,
- *   onRemove: (recipeId: string, name: string) => void
+ *   onRemove: (recipeId: string, name: string) => void,
+ *   onOpenRecipe: (recipeId: string) => void
  * }} options
  */
 export function createFavouritesList({
@@ -26,6 +32,7 @@ export function createFavouritesList({
   countElement,
   onSaveNote,
   onRemove,
+  onOpenRecipe,
 }) {
   /**
    * Builds one entry.
@@ -98,21 +105,58 @@ export function createFavouritesList({
     });
 
     const removeButton = createElement("button", {
-      className: "button button--danger button--small favourite__remove",
+      className: "button button--danger",
       text: t("saved.remove"),
       attributes: {
         type: "button",
-        "aria-label": `Remove ${favourite.name} from your saved recipes`,
+        "aria-label": t("recipe.removeLabel", { name: favourite.name }),
       },
     });
 
     removeButton.addEventListener("click", () => onRemove(favourite.id, favourite.name));
 
+    const image = createElement("img", {
+      className: "recipe-card__image",
+      attributes: {
+        // The thumbnail was stored with the recipe, so the card can be drawn
+        // without asking the API for it again.
+        src: favourite.thumbnail || placeholderImage,
+        alt: t("recipe.photograph", { name: favourite.name }),
+        loading: "lazy",
+        width: "400",
+        height: "300",
+      },
+    });
+
+    image.addEventListener(
+      "error",
+      () => {
+        image.src = placeholderImage;
+        image.alt = t("recipe.noPhotograph", { name: favourite.name });
+      },
+      { once: true },
+    );
+
+    const openButton = createElement("button", {
+      className: "button button--secondary",
+      text: t("recipe.view"),
+      attributes: {
+        type: "button",
+        "aria-label": t("recipe.viewLabel", { name: favourite.name }),
+      },
+    });
+
+    openButton.addEventListener("click", () => onOpenRecipe(favourite.id));
+
     return createElement("li", {
       className: "favourite",
       children: [
         createElement("div", {
-          className: "favourite__header",
+          className: "recipe-card__image-frame",
+          children: [image],
+        }),
+        createElement("div", {
+          className: "favourite__body",
           children: [
             createElement("h2", { className: "favourite__title", text: favourite.name }),
             createElement("p", {
@@ -128,10 +172,13 @@ export function createFavouritesList({
                 }),
               ],
             }),
+            noteForm,
+            createElement("div", {
+              className: "favourite__actions",
+              children: [openButton, removeButton],
+            }),
           ],
         }),
-        noteForm,
-        removeButton,
       ],
     });
   }
