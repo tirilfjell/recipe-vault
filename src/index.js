@@ -435,6 +435,8 @@ function main() {
       elements.appView.hidden = false;
       elements.accountBar.hidden = false;
       elements.screenNavWrapper.hidden = false;
+      // There is now something for the menu button to open.
+      headerMenu.setHasContent(true);
       elements.accountEmail.textContent = user.email ?? "";
 
       // Whichever screen the URL asks for, now that there is an account to show
@@ -453,6 +455,9 @@ function main() {
     elements.appView.hidden = true;
     elements.accountBar.hidden = true;
     elements.screenNavWrapper.hidden = true;
+    // The sign-in screen has no navigation and no account controls, so the menu
+    // button has nothing to show and is taken away with them.
+    headerMenu.setHasContent(false);
     elements.authView.hidden = false;
     authFeedback.hide();
     authPanel.reset();

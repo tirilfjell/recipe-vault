@@ -36,6 +36,13 @@ export function createHeaderMenu({ header, toggle, menu }) {
   /** Whether the header is currently collapsed. */
   let isCollapsed = false;
 
+  /**
+   * Whether there is anything in the menu to show. Both the navigation and the
+   * account controls are hidden until somebody is signed in, so on the sign-in
+   * screen the button would otherwise open an empty panel.
+   */
+  let hasContent = false;
+
   /** Writes the button's label for its current state. */
   function updateLabel() {
     toggle.setAttribute("aria-label", t(isOpen ? "app.closeMenu" : "app.openMenu"));
@@ -73,11 +80,12 @@ export function createHeaderMenu({ header, toggle, menu }) {
     }
   }
 
-  /** Applies the rules for the current width and scroll position. */
+  /** Applies the rules for the current width, scroll position and contents. */
   function update() {
-    if (wide.matches) {
-      // On a wide screen the header never collapses and the button is taken out
-      // of the document, so it cannot be reached by keyboard or read out.
+    // Nothing to open, or a wide screen where the links are already visible: the
+    // button is taken out of the document, so it cannot be reached by keyboard
+    // or read out.
+    if (!hasContent || wide.matches) {
       toggle.hidden = true;
       setCollapsed(false);
       setOpen(false);
@@ -115,6 +123,16 @@ export function createHeaderMenu({ header, toggle, menu }) {
   updateLabel();
 
   return {
+    /**
+     * Tells the header whether the menu has anything in it. The button only
+     * appears once there is something to open.
+     * @param {boolean} next
+     */
+    setHasContent(next) {
+      hasContent = next;
+      update();
+    },
+
     /** Rewrites the button's label after a language change. */
     refreshLabels: updateLabel,
 
