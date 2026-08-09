@@ -11,9 +11,8 @@ Firebase.
 
 - **GitHub repository:** https://github.com/tirilfjell/recipe-vault
 - **Live version (Firebase Hosting):** https://recipe-valut.web.app
-- **Prototype:** `prototype.pen` in this folder, with PNG exports of every screen in
-  `prototype-exports/`. A Figma version is to be exported as `prototype.fig`; the Pencil file and
-  the exports are the reference for it.
+- **Figma prototype:** `RecipeVaultPrototype.fig` in this folder. `prototype-exports/` holds a PNG
+  of each screen, for looking at without opening Figma.
 
 ## Features
 
@@ -47,30 +46,6 @@ Firebase.
 - **Motion.** Cards cascade in, hover states lift, the wheel spins. All of it is switched off for
   anyone whose system asks for reduced motion.
 
-## Setting up Firebase
-
-The app needs a Firebase project of its own. It takes about five minutes.
-
-1. Go to https://console.firebase.google.com and create a project.
-2. Open **Build → Authentication → Get started** and enable the **Email/Password** provider.
-3. Open **Build → Firestore Database → Create database**. Start in production mode and pick a
-   location.
-4. Go to **Firestore Database → Rules**, paste the contents of `firestore.rules` from this folder,
-   and publish.
-5. Open **Project settings → General**. Under "Your apps", register a **Web app**. Copy the values
-   from the `firebaseConfig` object it shows you.
-6. Copy `.env.example` to `.env` and paste the values in:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-7. Start the app. Until this is done, the app shows a notice explaining that Firebase is not
-   configured yet instead of a broken sign-in form.
-
-When the site is deployed, add the deployed domain under **Authentication → Settings → Authorized
-domains**, otherwise Firebase will refuse the sign-in from that domain.
-
 ## Running the project
 
 ```bash
@@ -85,13 +60,15 @@ npm run preview    # serves the production build locally
 npm test           # runs the unit tests
 ```
 
+`dist/` is what gets deployed – that is the folder to point Firebase Hosting or Netlify at.
+
 ## Tests
 
 ```bash
 npm test
 ```
 
-58 tests, run by Node's own test runner, so the project needs no test dependency:
+62 tests, run by Node's own test runner, so the project needs no test dependency:
 
 - **`tests/recipeFilters.test.js`** – the filtering and sorting, including that they return new
   lists rather than reordering the one they were given.
@@ -103,7 +80,39 @@ npm test
 - **`tests/contrast.test.js`** – every text-and-background pairing in both themes, and every wheel
   segment, calculated against the WCAG AA minimum of 4.5:1.
 
-Deploy the contents of `dist/` – that is the folder to point Netlify or Firebase Hosting at.
+## Running it against your own Firebase project
+
+Only needed to run the project from a fresh clone: the deployed site above is already configured,
+and `.env` is deliberately not in the repository, so a clone has no project to talk to until one is
+supplied. Until then the app shows a notice saying so rather than a broken sign-in form.
+
+It takes about five minutes.
+
+1. Go to https://console.firebase.google.com and create a project.
+2. Open **Build → Authentication → Get started** and enable the **Email/Password** provider.
+3. Open **Build → Firestore Database → Create database**. Start in production mode and pick a
+   location.
+4. Publish the database rules. Either paste `firestore.rules` from this folder into
+   **Firestore Database → Rules** and publish, or, with the Firebase CLI installed and logged in:
+
+   ```bash
+   firebase deploy --only firestore:rules
+   ```
+
+   `firebase.json` in this folder already points the CLI at the rules file.
+5. Open **Project settings → General**. Under "Your apps", register a **Web app**. Copy the values
+   from the `firebaseConfig` object it shows you.
+6. Copy `.env.example` to `.env` and paste the values in:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+7. Start the app. Until this is done, the app shows a notice explaining that Firebase is not
+   configured yet instead of a broken sign-in form.
+
+When the site is deployed, add the deployed domain under **Authentication → Settings → Authorized
+domains**, otherwise Firebase will refuse the sign-in from that domain.
 
 ## Project structure
 
@@ -121,8 +130,8 @@ Final_project/
 ├── .env.example            Template for the local .env file
 ├── package.json
 ├── readme.md
-├── prototype.pen           Prototype: 6 screens plus the design system
-├── prototype-exports/      PNG export of each prototype screen
+├── RecipeVaultPrototype.fig  Figma prototype
+├── prototype-exports/      PNG of each prototype screen
 └── src/
     ├── index.html          Page template used by HtmlWebpackPlugin
     ├── index.js            Entry point: holds the state and wires the modules
