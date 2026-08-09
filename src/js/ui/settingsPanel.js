@@ -7,8 +7,20 @@
  * a callback.
  */
 
-import { getAvailableLanguages, getLanguage, setLanguage, t } from "../i18n/i18n.js";
-import { THEME_DARK, THEME_LIGHT, getTheme, setTheme } from "../features/themeService.js";
+import {
+  LANGUAGE_AUTO,
+  getAvailableLanguages,
+  getLanguageChoice,
+  setLanguage,
+  t,
+} from "../i18n/i18n.js";
+import {
+  THEME_DARK,
+  THEME_LIGHT,
+  THEME_SYSTEM,
+  getThemeChoice,
+  setTheme,
+} from "../features/themeService.js";
 import { createElement } from "../utils/dom.js";
 import { translations } from "../i18n/translations.js";
 
@@ -77,23 +89,30 @@ export function createSettingsPanel({ container, onDeleteAccount }) {
 
   /** The language section. */
   function createLanguageSection() {
-    const options = getAvailableLanguages().map((code) => ({
-      value: code,
-      // The name of each language is written in that language, which is what a
-      // reader looking for their own language expects to see.
-      label: translations[code]["language.name"],
-    }));
+    const options = [
+      // Automatic is first and is the default: the app follows the browser until
+      // a language is chosen deliberately.
+      { value: LANGUAGE_AUTO, label: t("settings.languageAuto") },
+      ...getAvailableLanguages().map((code) => ({
+        value: code,
+        // The name of each language is written in that language, which is what a
+        // reader looking for their own language expects to see.
+        label: translations[code]["language.name"],
+      })),
+    ];
 
     return createSection(
       "settings.languageHeading",
       "settings.languageHint",
-      createChoiceButtons(options, getLanguage(), (code) => setLanguage(code)),
+      createChoiceButtons(options, getLanguageChoice(), (code) => setLanguage(code)),
     );
   }
 
   /** The light and dark section. */
   function createThemeSection() {
     const options = [
+      // System is first and is the default.
+      { value: THEME_SYSTEM, label: t("settings.themeSystem") },
       { value: THEME_LIGHT, label: t("settings.themeLight") },
       { value: THEME_DARK, label: t("settings.themeDark") },
     ];
@@ -101,7 +120,7 @@ export function createSettingsPanel({ container, onDeleteAccount }) {
     return createSection(
       "settings.themeHeading",
       "settings.themeHint",
-      createChoiceButtons(options, getTheme(), (theme) => {
+      createChoiceButtons(options, getThemeChoice(), (theme) => {
         setTheme(theme);
         render();
       }),
