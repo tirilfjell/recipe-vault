@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" role="img" aria-hidden="true" focusable="false">
+  <!--
+    The mark: a closed cookbook seen from the front, with a heart on the cover.
+    It replaces the "RV" monogram, which stopped making sense once the app is
+    called Oppskriftsboka in Norwegian. A drawing carries the same meaning in
+    every language.
+
+    Drawn on a 40x40 grid with the same 2px ink outline as the rest of the
+    interface, so it sits with the buttons and cards rather than beside them.
+  -->
+
+  <!-- The spine, a little darker than the cover. -->
+  <path
+    d="M8 6.5A2.5 2.5 0 0 1 10.5 4H13v32h-2.5A2.5 2.5 0 0 1 8 33.5Z"
+    fill="#8f3417"
+    stroke="#111118"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
+
+  <!-- The cover. -->
+  <rect
+    x="12"
+    y="4"
+    width="20"
+    height="32"
+    rx="2.5"
+    fill="#b4451f"
+    stroke="#111118"
+    stroke-width="2"
+  />
+
+  <!-- The pages, showing along the fore edge. -->
+  <path
+    d="M29 7.5h1.5a1 1 0 0 1 1 1v23a1 1 0 0 1-1 1H29Z"
+    fill="#fbf7f2"
+    stroke="#111118"
+    stroke-width="1.5"
+    stroke-linejoin="round"
+  />
+
+  <!-- The heart on the cover. -->
+  <path
+    d="M21.5 27.5c-3.4-2.6-6.5-4.8-6.5-8.2a3.9 3.9 0 0 1 6.5-2.9 3.9 3.9 0 0 1 6.5 2.9c0 3.4-3.1 5.6-6.5 8.2Z"
+    fill="#ffbac4"
+    stroke="#111118"
+    stroke-width="2"
+    stroke-linejoin="round"
+  />
+
+  <!-- A bookmark ribbon tucked into the top of the pages. -->
+  <path d="M24.5 4v6l-2-1.6L20.5 10V4Z" fill="#ffda00" stroke="#111118" stroke-width="1.5" stroke-linejoin="round" />
+</svg>

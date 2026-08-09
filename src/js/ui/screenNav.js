@@ -36,12 +36,14 @@ function readScreenFromHash() {
  * Creates the screen navigation.
  *
  * @param {object} options
- * @param {HTMLElement} options.navElement Holds the navigation buttons.
+ * @param {HTMLElement} options.navElement Holds the inline navigation links.
+ * @param {HTMLElement} [options.menuElement] The list inside the menu panel, which
+ *   shows the same screens on a narrow layout.
  * @param {Record<string, HTMLElement>} options.screens The screen elements, keyed by id.
  * @param {(screen: string) => void} [options.onChange] Called after a screen is shown.
  * @returns {{render: () => void, show: (screen: string) => void, getCurrent: () => string}}
  */
-export function createScreenNav({ navElement, screens, onChange }) {
+export function createScreenNav({ navElement, menuElement, screens, onChange }) {
   let currentScreen = readScreenFromHash();
 
   /** Shows the current screen and hides the others. */
@@ -54,26 +56,50 @@ export function createScreenNav({ navElement, screens, onChange }) {
     onChange?.(currentScreen);
   }
 
-  /** Draws the navigation buttons for the current language and screen. */
+  /**
+   * Builds one link to a screen.
+   * @param {{id: string, labelKey: string}} screen
+   * @param {string} className
+   * @returns {HTMLAnchorElement}
+   */
+  function createLink(screen, className) {
+    const isCurrent = screen.id === currentScreen;
+
+    const link = document.createElement("a");
+    link.className = `${className}${isCurrent ? ` ${className}--current` : ""}`;
+    link.href = `#${screen.id}`;
+    link.textContent = t(screen.labelKey);
+
+    // aria-current is how a screen reader is told which screen is open. The
+    // filled pill alone would not carry that.
+    if (isCurrent) {
+      link.setAttribute("aria-current", "page");
+    }
+
+    return link;
+  }
+
+  /**
+   * Draws the links for the current language and screen.
+   *
+   * The same screens are rendered twice: once inline in the header for a wide
+   * layout, once in the menu panel for a narrow one. Only one set is visible at
+   * a time, which the stylesheet decides.
+   */
   function render() {
     navElement.replaceChildren(
-      ...SCREENS.map((screen) => {
-        const isCurrent = screen.id === currentScreen;
-
-        const link = document.createElement("a");
-        link.className = `screen-nav__link${isCurrent ? " screen-nav__link--current" : ""}`;
-        link.href = `#${screen.id}`;
-        link.textContent = t(screen.labelKey);
-
-        // aria-current is how a screen reader is told which screen is open. The
-        // underline alone would not carry that.
-        if (isCurrent) {
-          link.setAttribute("aria-current", "page");
-        }
-
-        return link;
-      }),
+      ...SCREENS.map((screen) => createLink(screen, "screen-nav__link")),
     );
+
+    if (menuElement) {
+      menuElement.replaceChildren(
+        ...SCREENS.map((screen) => {
+          const item = document.createElement("li");
+          item.append(createLink(screen, "site-menu__link"));
+          return item;
+        }),
+      );
+    }
   }
 
   // Real links plus a hashchange listener means the back button and a middle

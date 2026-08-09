@@ -13,53 +13,54 @@
   <body class="page">
     <a class="skip-link" href="#main-content" data-i18n="app.skipLink">Skip to main content</a>
 
+    <!-- The brand and the menu button are two separate pills in opposite corners
+         rather than one bar across the page, so nothing has to wrap and the
+         header stays one row tall at every width. -->
     <header class="site-header">
-      <div class="site-header__inner">
-        <p class="site-header__brand">
-          <span class="site-header__mark" aria-hidden="true">RV</span>
-          <span data-i18n="app.name">Recipe Vault</span>
-        </p>
+      <p class="site-header__brand">
+        <img class="site-header__mark" data-logo alt="" width="40" height="40" />
+        <span data-i18n="app.name">Recipe Vault</span>
+      </p>
 
-        <!-- Opens the navigation once the header has collapsed on scroll. It is
-             only reachable on a small screen, where the collapsed header hides
-             the links; on a desktop the links are always visible and this button
-             is hidden from everyone, including assistive technology. -->
-        <button
-          class="menu-toggle"
-          type="button"
-          data-menu-toggle
-          aria-expanded="false"
-          aria-controls="site-menu"
-          data-i18n-aria-label="app.openMenu"
-          aria-label="Open the menu"
-          hidden
-        >
-          <span class="menu-toggle__bars" aria-hidden="true">
-            <span class="menu-toggle__bar"></span>
-            <span class="menu-toggle__bar"></span>
-            <span class="menu-toggle__bar"></span>
-          </span>
-        </button>
+      <!-- The navigation links sit inline on a wide screen and move into the
+           menu panel below the breakpoint. -->
+      <nav class="screen-nav" data-screen-nav-wrapper aria-label="Recipe Vault" hidden>
+        <div class="screen-nav__links" data-screen-nav></div>
+      </nav>
 
-        <!-- The screen navigation and the account controls share one collapsible
-             region, so the burger reveals everything at once rather than leaving
-             the sign-out button stranded. -->
-        <div class="site-menu" id="site-menu" data-site-menu>
-          <nav class="screen-nav" data-screen-nav-wrapper aria-label="Recipe Vault" hidden>
-            <div class="screen-nav__links" data-screen-nav></div>
-          </nav>
+      <button
+        class="menu-toggle"
+        type="button"
+        data-menu-toggle
+        aria-expanded="false"
+        aria-controls="site-menu"
+        data-i18n-aria-label="app.openMenu"
+        aria-label="Open the menu"
+        hidden
+      >
+        <span class="menu-toggle__dots" aria-hidden="true">
+          <span class="menu-toggle__dot"></span>
+          <span class="menu-toggle__dot"></span>
+          <span class="menu-toggle__dot"></span>
+        </span>
+      </button>
 
-          <div class="account-bar" data-account-bar hidden>
-            <span class="account-bar__email" data-account-email></span>
-            <button
-              class="button button--ghost button--small"
-              type="button"
-              data-sign-out
-              data-i18n="app.signOut"
-            >
-              Sign out
-            </button>
-          </div>
+      <!-- The panel the menu button opens: the screens as a list, then the
+           account. It is a sibling of the button rather than inside it, so it
+           can be positioned against the header instead of the button. -->
+      <div class="site-menu" id="site-menu" data-site-menu hidden>
+        <ul class="site-menu__list" data-menu-links></ul>
+
+        <div class="site-menu__account" data-account-bar hidden>
+          <span class="site-menu__email" data-account-email></span>
+          <button
+            class="button button--ghost button--full"
+            type="button"
+            data-sign-out
+            data-i18n="app.signOut"
+          >
+            Sign out
+          </button>
         </div>
       </div>
     </header>
@@ -257,7 +258,9 @@
               <div class="dinner-wheel">
                 <div class="dinner-wheel__stage" data-dinner-wheel>
                   <span class="dinner-wheel__pointer" aria-hidden="true"></span>
-                  <span class="dinner-wheel__hub" aria-hidden="true">RV</span>
+                  <span class="dinner-wheel__hub" aria-hidden="true">
+                    <img data-logo alt="" width="26" height="26" />
+                  </span>
                 </div>
               </div>
 
@@ -316,7 +319,7 @@
     <footer class="site-footer">
       <div class="site-footer__inner">
         <div class="site-footer__brand">
-          <span class="site-footer__logo" aria-hidden="true">RV</span>
+          <img class="site-footer__logo" data-logo alt="" width="32" height="32" />
           <p class="site-footer__tagline" data-i18n="footer.tagline">
             Your recipes, in one place. Search, cook and keep the ones you love.
           </p>
