@@ -17,27 +17,50 @@ const STORAGE_KEY = "recipe-vault.language";
 const listeners = new Set();
 
 /**
- * Reads the stored language, falling back to the browser's preference and then
- * to English. An unknown stored value is ignored rather than trusted.
+ * The stored value meaning "follow the browser" rather than a fixed language.
+ * It is stored explicitly, so that somebody who picked a language can go back to
+ * following the browser again.
+ */
+export const LANGUAGE_AUTO = "auto";
+
+/**
+ * The language the browser asks for, or English when it asks for one the app
+ * does not have.
  * @returns {string}
  */
-function readInitialLanguage() {
+function browserLanguage() {
+  // navigator.language looks like "nb-NO", so only the part before the dash is
+  // compared. It is absent outside a browser, such as when the tests run.
+  const preferred =
+    typeof navigator === "undefined" ? "" : (navigator.language || "").split("-")[0];
+
+  return preferred in translations ? preferred : DEFAULT_LANGUAGE;
+}
+
+/**
+ * The stored choice: "auto" or a language code. This is what the settings screen
+ * marks as active, and is not necessarily the language on screen.
+ * @returns {string}
+ */
+export function getLanguageChoice() {
   try {
     const stored = globalThis.localStorage?.getItem(STORAGE_KEY);
 
-    if (stored && stored in translations) {
+    if (stored === LANGUAGE_AUTO || (stored && stored in translations)) {
       return stored;
     }
   } catch {
     // Private browsing modes can refuse localStorage. The default is fine.
   }
 
-  // navigator.language looks like "nb-NO", so only the part before the dash is
-  // compared. It is absent outside a browser, such as when the tests run.
-  const browserLanguage =
-    typeof navigator === "undefined" ? "" : (navigator.language || "").split("-")[0];
+  return LANGUAGE_AUTO;
+}
 
-  return browserLanguage in translations ? browserLanguage : DEFAULT_LANGUAGE;
+/** Resolves the stored choice to an actual language code. */
+function readInitialLanguage() {
+  const choice = getLanguageChoice();
+
+  return choice === LANGUAGE_AUTO ? browserLanguage() : choice;
 }
 
 let currentLanguage = readInitialLanguage();
@@ -86,11 +109,13 @@ export function t(key, values) {
  * @param {string} language
  */
 export function setLanguage(language) {
-  if (!(language in translations) || language === currentLanguage) {
+  const isAuto = language === LANGUAGE_AUTO;
+
+  if (!isAuto && !(language in translations)) {
     return;
   }
 
-  currentLanguage = language;
+  const resolved = isAuto ? browserLanguage() : language;
 
   try {
     globalThis.localStorage?.setItem(STORAGE_KEY, language);
@@ -98,11 +123,15 @@ export function setLanguage(language) {
     // Not being able to remember the choice is not worth interrupting the user.
   }
 
+  // The listeners still run when only the choice changed, so the settings screen
+  // can redraw which option is marked as active.
+  currentLanguage = resolved;
+
   // Screen readers and search engines both use this attribute, so it has to
   // follow the interface language. The guard is there because the translations
   // are also used by the tests, which run without a document.
   if (typeof document !== "undefined") {
-    document.documentElement.lang = language;
+    document.documentElement.lang = resolved;
   }
 
   listeners.forEach((listener) => listener());

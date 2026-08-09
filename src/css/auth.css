@@ -41,34 +41,72 @@
 
 .auth-view__intro > :not(.auth-view__shape) {
   position: relative;
-  z-index: 1;
+  /* Above every shape, so a drifting shape passes behind the words rather than
+     across them. */
+  z-index: 2;
 }
 
+/* Each shape drifts along its own long, looping path. The durations are long
+   and deliberately not multiples of one another, so the two never fall into
+   step and the movement keeps looking unrepeated. ease-in-out on a path that
+   starts and ends in the same place is what makes it read as drifting rather
+   than as sliding between positions. */
 .auth-view__shape {
   position: absolute;
   z-index: 0;
-  animation: float 6s ease-in-out infinite;
+  /* Slightly transparent, so the moment a shape passes behind a letter the
+     letter still wins. */
+  opacity: 0.85;
+  will-change: transform;
 }
 
 /* Both shapes are kept clear of the text rather than sitting under it, so the
    heading and the lead paragraph stay at full contrast. */
 .auth-view__shape--circle {
-  top: -1.5rem;
-  left: 0;
+  top: -2.5rem;
+  left: -2.5rem;
   width: 4.5rem;
   height: 4.5rem;
   background-color: var(--color-accent-sky);
   border-radius: var(--radius-pill);
+  animation: drift-circle 26s ease-in-out infinite;
 }
 
 .auth-view__shape--blob {
-  right: 1rem;
-  bottom: -2.5rem;
+  right: 2rem;
+  bottom: -3rem;
   width: 7rem;
   height: 7rem;
   background-color: var(--color-accent-pink);
   border-radius: 70% 30% 55% 45% / 45% 55% 40% 60%;
-  animation-delay: -3s;
+  /* Two animations at once: one moves it, the other slowly reshapes the blob so
+     its outline is never quite the same twice. */
+  animation:
+    drift-blob 34s ease-in-out infinite,
+    morph-blob 18s ease-in-out infinite;
+}
+
+/* A green ring, low on the left, drifting on its own path. It is drawn as a
+   ring rather than a disc so it reads differently from the other two circles. */
+.auth-view__shape--ring {
+  left: -3rem;
+  bottom: -3.5rem;
+  width: 5.5rem;
+  height: 5.5rem;
+  border: 0.75rem solid var(--color-accent-green);
+  border-radius: var(--radius-pill);
+  animation: drift-ring 29s ease-in-out infinite;
+}
+
+/* A fourth shape, on the far side of the heading. */
+.auth-view__shape--dot {
+  right: 6%;
+  top: -2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--color-accent-yellow);
+  border-radius: var(--radius-pill);
+  animation: drift-dot 21s ease-in-out infinite;
 }
 
 /* The shapes are ornament, so they are dropped on small screens where there is
@@ -76,6 +114,94 @@
 @media (max-width: 60rem) {
   .auth-view__shape {
     display: none;
+  }
+}
+
+@keyframes drift-circle {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+
+  25% {
+    transform: translate(2.5rem, 1.5rem) rotate(45deg) scale(1.08);
+  }
+
+  50% {
+    transform: translate(1rem, 3.5rem) rotate(90deg) scale(0.94);
+  }
+
+  75% {
+    transform: translate(-1.5rem, 1.75rem) rotate(135deg) scale(1.04);
+  }
+}
+
+@keyframes drift-blob {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+
+  20% {
+    transform: translate(-3rem, -1.25rem) rotate(-24deg) scale(1.06);
+  }
+
+  45% {
+    transform: translate(-4.5rem, 1.5rem) rotate(-48deg) scale(0.96);
+  }
+
+  70% {
+    transform: translate(-1.75rem, 2.75rem) rotate(-18deg) scale(1.1);
+  }
+}
+
+@keyframes drift-dot {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(-2rem, 2.25rem) scale(1.18);
+  }
+
+  66% {
+    transform: translate(1.75rem, 1rem) scale(0.88);
+  }
+}
+
+/* The blob's own outline, animated separately from its position. */
+@keyframes drift-ring {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+
+  30% {
+    transform: translate(3.25rem, -2rem) rotate(60deg) scale(0.9);
+  }
+
+  55% {
+    transform: translate(5rem, 1rem) rotate(120deg) scale(1.12);
+  }
+
+  80% {
+    transform: translate(1.5rem, 2.5rem) rotate(200deg) scale(0.96);
+  }
+}
+
+@keyframes morph-blob {
+  0%,
+  100% {
+    border-radius: 70% 30% 55% 45% / 45% 55% 40% 60%;
+  }
+
+  33% {
+    border-radius: 40% 60% 35% 65% / 60% 40% 65% 35%;
+  }
+
+  66% {
+    border-radius: 55% 45% 65% 35% / 35% 65% 45% 55%;
   }
 }
 

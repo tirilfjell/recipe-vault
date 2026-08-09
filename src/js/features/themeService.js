@@ -5,14 +5,23 @@
  * the stylesheet reads to swap the colour tokens. Keeping it to one attribute
  * means no component needs to know which theme is active.
  *
- * The choice is stored per device. Until the user picks one, the app follows the
- * operating system setting.
+ * There are three choices, and "system" is the default: the app follows the
+ * operating system until the user deliberately picks light or dark. Storing
+ * "system" rather than storing nothing is what lets somebody go back to
+ * following the system after having chosen.
  */
 
 const STORAGE_KEY = "recipe-vault.theme";
 
 export const THEME_LIGHT = "light";
 export const THEME_DARK = "dark";
+export const THEME_SYSTEM = "system";
+
+/** The choices offered in the settings, in the order they are shown. */
+export const THEME_CHOICES = [THEME_SYSTEM, THEME_LIGHT, THEME_DARK];
+
+/** Stops listening to the operating system when the user picks a fixed theme. */
+let unsubscribeSystem = null;
 
 /**
  * The theme the operating system asks for.
@@ -27,44 +36,95 @@ function systemTheme() {
 }
 
 /**
- * The stored theme, or the system one when the user has not chosen.
+ * The stored choice: "system", "light" or "dark".
+ *
+ * This is what the settings screen marks as active. It is not necessarily the
+ * theme on screen — under "system" that is whatever the operating system says.
+ *
  * @returns {string}
  */
-export function getTheme() {
+export function getThemeChoice() {
   try {
     const stored = globalThis.localStorage?.getItem(STORAGE_KEY);
 
-    if (stored === THEME_LIGHT || stored === THEME_DARK) {
+    if (THEME_CHOICES.includes(stored)) {
       return stored;
     }
   } catch {
-    // localStorage can be unavailable; the system preference still works.
+    // localStorage can be unavailable; following the system still works.
   }
 
-  return systemTheme();
+  return THEME_SYSTEM;
 }
 
 /**
- * Applies a theme and remembers it.
- * @param {string} theme
+ * The theme actually being shown, with "system" resolved to light or dark.
+ * @returns {string}
  */
-export function setTheme(theme) {
-  const next = theme === THEME_DARK ? THEME_DARK : THEME_LIGHT;
+export function getTheme() {
+  const choice = getThemeChoice();
 
+  return choice === THEME_SYSTEM ? systemTheme() : choice;
+}
+
+/**
+ * Writes the resolved theme onto the document element.
+ * @param {string} resolved
+ */
+function paint(resolved) {
   if (typeof document !== "undefined") {
-    document.documentElement.dataset.theme = next;
+    document.documentElement.dataset.theme = resolved;
   }
+}
+
+/**
+ * Follows the operating system while the choice is "system", so the app changes
+ * with it rather than only at the next reload.
+ */
+function watchSystem() {
+  unsubscribeSystem?.();
+  unsubscribeSystem = null;
+
+  if (typeof window === "undefined" || !window.matchMedia) {
+    return;
+  }
+
+  const query = window.matchMedia("(prefers-color-scheme: dark)");
+  const onChange = () => paint(systemTheme());
+
+  query.addEventListener("change", onChange);
+  unsubscribeSystem = () => query.removeEventListener("change", onChange);
+}
+
+/**
+ * Applies a choice and remembers it.
+ * @param {string} choice One of THEME_CHOICES.
+ */
+export function setTheme(choice) {
+  const next = THEME_CHOICES.includes(choice) ? choice : THEME_SYSTEM;
 
   try {
     globalThis.localStorage?.setItem(STORAGE_KEY, next);
   } catch {
-    // The theme still applies for this visit even if it cannot be stored.
+    // The choice still applies for this visit even if it cannot be stored.
   }
+
+  if (next === THEME_SYSTEM) {
+    watchSystem();
+    paint(systemTheme());
+    return;
+  }
+
+  unsubscribeSystem?.();
+  unsubscribeSystem = null;
+  paint(next);
 }
 
 /** Applies the starting theme, before the first paint of the interface. */
 export function applyInitialTheme() {
-  if (typeof document !== "undefined") {
-    document.documentElement.dataset.theme = getTheme();
+  if (getThemeChoice() === THEME_SYSTEM) {
+    watchSystem();
   }
+
+  paint(getTheme());
 }
