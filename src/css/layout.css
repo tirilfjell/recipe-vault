@@ -26,7 +26,6 @@
   z-index: 20;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: var(--space-sm);
   max-width: var(--layout-max-width);
   margin: 0 auto;
@@ -34,12 +33,17 @@
 }
 
 /* Each pill carries its own surface, so the page scrolling underneath does not
-   show through the header. */
+   show through the header.
+
+   The auto right margin keeps the brand hard against the left edge and pushes
+   everything after it to the right, whether that is the links, the menu button
+   or nothing at all. It does not depend on how many siblings are present, so
+   hiding the navigation on the sign-in screen cannot move the brand. */
 .site-header__brand {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  margin: 0;
+  margin: 0 auto 0 0;
   padding: var(--space-xs) var(--space-md) var(--space-xs) var(--space-xs);
   background-color: var(--color-surface);
   border: var(--border-ink);
